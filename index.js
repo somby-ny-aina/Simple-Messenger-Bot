@@ -4,7 +4,6 @@ const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
-const prompt = "you are Smo";
 
 const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
@@ -34,14 +33,14 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
 
 const getAnswer = async (text, senderId) => {
   try {
-    const response = await axios.get(`https://personal-ai-phi.vercel.app/kshitiz`, {
+    const response = await axios.get(`https://deku-rest-apis.ooguy.com/api/gpt-4o`, {
       params: {
-        prompt: prompt,
-        content: text
+        q: text,
+        uid: senderId
       }
     });
 
-    const botAnswer = response.data.answer;
+    const botAnswer = response.data.result;
     
     if (typeof botAnswer !== 'string' || !isUTF8(botAnswer)) {
       console.error('Invalid UTF-8 response from AI:', botAnswer);
