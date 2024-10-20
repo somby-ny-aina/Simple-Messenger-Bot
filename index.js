@@ -110,8 +110,8 @@ const getAnswer = async (text, senderId) => {
   const image = response.data.image;
   const botAnswer = `Title: ${title}\nArtist: ${artist}\n\n\nLyrics:\n${lyrics}`;
 
-  return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
   sendImage(senderId, image, PAGE_ACCESS_TOKEN);
+  return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
 } else {
     try {
       const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
