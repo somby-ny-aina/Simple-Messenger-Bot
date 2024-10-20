@@ -8,7 +8,7 @@
 <tt>value: "your access token"</tt>
 
 # Installation:
-<code>npm init - y && npm install express body-parser axios</code>
+<code>npm init -y && npm install express body-parser axios</code>
 
 # Run your bot:
 <code>node index.js</code>
