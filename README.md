@@ -12,10 +12,6 @@
 
 # Run your bot:
 <code>node index.js</code>
-
-
-<b>📌 You can change the api. Thanks to Kshitiz 😇 for the api</b>
-
-
-
+<hr><br><br>
+<b>📌 You can change the api. Thanks to Kshitiz 😇 for the api</b><br><br>
 <i>&copy; Somby Ny Aina</i>
