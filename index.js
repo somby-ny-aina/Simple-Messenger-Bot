@@ -4,7 +4,7 @@ const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
-const prompt = "You are Simon Peter.";
+const prompt = "You are helpful assistant";
 
 const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
