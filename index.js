@@ -137,7 +137,7 @@ const getAnswer = async (text, senderId) => {
   const title = response.data.title;
   const lyrics = response.data.lyrics;
   const image = response.data.image;
-  const botAnswer = `Title: ${title}\nArtist: ${artist}\n\n\nLyrics:\n${lyrics}`;
+  const botAnswer = `𝗧𝗶𝘁𝗹𝗲: ${title}\n𝗔𝗿𝘁𝗶𝘀𝘁: ${artist}\n\n\n𝗟𝘆𝗿𝗶𝗰𝘀:\n${lyrics}`;
 
   sendImage(senderId, image, PAGE_ACCESS_TOKEN);
   return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
