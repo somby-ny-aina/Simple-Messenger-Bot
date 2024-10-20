@@ -1,3 +1,5 @@
+// By Somby Ny Aina 🇲🇬
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require("axios");
@@ -5,7 +7,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
-// Send a text message
 const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
     const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
@@ -32,42 +33,6 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
   }
 };
 
-// Send a file attachment instead of an image (due to the download behavior)
-const sendFileAttachment = async (senderId, fileUrl, pageAccessToken) => {
-  try {
-    const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
-      recipient: { id: senderId },
-      message: {
-        attachment: {
-          type: "file",
-          payload: {
-            url: fileUrl,
-            is_reusable: true
-          }
-        }
-      }
-    }, {
-      params: {
-        access_token: pageAccessToken
-      },
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-
-    if (response.data.error) {
-      console.error('Error sending file attachment:', response.data.error);
-      throw new Error(response.data.error.message);
-    }
-
-    return response.data;
-  } catch (error) {
-    console.error('Error sending file attachment:', error.message);
-    throw error;
-  }
-};
-
-// Determine if the response contains a valid URL from "https://files.eqing.tech"
 const getAnswer = async (text, senderId) => {
   try {
     const response = await axios.get(`https://deku-rest-apis.ooguy.com/api/gpt-4o`, {
@@ -78,19 +43,9 @@ const getAnswer = async (text, senderId) => {
     });
 
     const botAnswer = response.data.result;
-    
-    // Check if the response contains a URL from "https://files.eqing.tech"
-    const eqingTechUrlRegex = /(https:\/\/files\.eqing\.tech[^\s]+)/g;
-    const foundUrls = botAnswer.match(eqingTechUrlRegex);
 
-    if (foundUrls) {
-      // If a valid eqing.tech URL is found, send it as a file attachment
-      const fileUrl = foundUrls[0];
-      return sendFileAttachment(senderId, fileUrl, PAGE_ACCESS_TOKEN);
-    } else {
-      // Otherwise, send a text message
-      return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
-    }
+    // Directly send the response without UTF-8 check
+    return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
   } catch (err) {
     console.error("Reply:", err.response ? err.response.data : err);
     return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
