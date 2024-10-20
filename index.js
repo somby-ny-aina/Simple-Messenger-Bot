@@ -4,7 +4,7 @@ const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
-const prompt = "I am Smo bot";
+const prompt = "you are Smo";
 
 const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
