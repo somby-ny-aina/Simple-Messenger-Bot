@@ -8,33 +8,34 @@ const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
 const sendMessage = async (senderId, message, pageAccessToken) => {
-  const MAX_LENGTH = 2000;
-
-  const sendInChunks = async (fullMessage) => {
+  const MAX_LENGTH = 2000; 
+  
+  const splitMessage = (text) => {
     const messageParts = [];
-    for (let i = 0; i < fullMessage.length; i += MAX_LENGTH) {
-      messageParts.push(fullMessage.substring(i, i + MAX_LENGTH));
+    for (let i = 0; i < text.length; i += MAX_LENGTH) {
+      messageParts.push(text.substring(i, i + MAX_LENGTH));
     }
-
-    for (const part of messageParts) {
-      await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
-        recipient: { id: senderId },
-        message: { text: part }
-      }, {
-        params: {
-          access_token: pageAccessToken
-        },
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-    }
+    return messageParts;
   };
 
   try {
-    if (typeof message === 'string' && message.length > MAX_LENGTH) {
+    if (typeof message.text === 'string' && message.text.length > MAX_LENGTH) {
+    
+      const messageParts = splitMessage(message.text);
 
-      await sendInChunks(message);
+      for (const part of messageParts) {
+        await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
+          recipient: { id: senderId },
+          message: { text: part }
+        }, {
+          params: {
+            access_token: pageAccessToken
+          },
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+      }
     } else {
       const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
         recipient: { id: senderId },
@@ -52,6 +53,8 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
         console.error('Error sending message:', response.data.error);
         throw new Error(response.data.error.message);
       }
+
+      return response.data;
     }
   } catch (error) {
     console.error('Error sending message:', error.message);
