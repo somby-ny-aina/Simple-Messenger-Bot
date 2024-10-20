@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
+// Send a text message
 const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
     const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
@@ -33,15 +34,16 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
   }
 };
 
-const sendFileAttachment = async (senderId, fileUrl, pageAccessToken) => {
+// Send an image
+const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   try {
     const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
       recipient: { id: senderId },
       message: {
         attachment: {
-          type: "file",
+          type: "image",
           payload: {
-            url: fileUrl,
+            url: imageUrl,
             is_reusable: true
           }
         }
@@ -56,17 +58,18 @@ const sendFileAttachment = async (senderId, fileUrl, pageAccessToken) => {
     });
 
     if (response.data.error) {
-      console.error('Error sending file attachment:', response.data.error);
+      console.error('Error sending image:', response.data.error);
       throw new Error(response.data.error.message);
     }
 
     return response.data;
   } catch (error) {
-    console.error('Error sending file attachment:', error.message);
+    console.error('Error sending image:', error.message);
     throw error;
   }
 };
 
+// Determine if the response contains a valid URL from "https://files.eqing.tech"
 const getAnswer = async (text, senderId) => {
   try {
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
@@ -78,13 +81,16 @@ const getAnswer = async (text, senderId) => {
 
     const botAnswer = response.data.result;
     
+    // Check if the response contains a URL from "https://files.eqing.tech"
     const eqingTechUrlRegex = /(https:\/\/files\.eqing\.tech[^\s]+)/g;
     const foundUrls = botAnswer.match(eqingTechUrlRegex);
 
     if (foundUrls) {
-      const fileUrl = foundUrls[0];
-      return sendFileAttachment(senderId, fileUrl, PAGE_ACCESS_TOKEN);
+      // If a valid eqing.tech URL is found, send it as an image
+      const imageUrl = foundUrls[0];
+      return sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
     } else {
+      // Otherwise, send a text message
       return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
     }
   } catch (err) {
