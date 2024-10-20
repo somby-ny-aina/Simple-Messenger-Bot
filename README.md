@@ -17,5 +17,5 @@
 <tt>Endpoint: /webhook</tt><br>
 <tt>Verify token: somby</tt>
 <hr><br><br>
-<b>📌 You can change the api. Thanks to Kshitiz 😇 for the api</b><br><br>
+<b>📌 You can change the api. Thanks to Deku 😇 for the api.</b><br><br>
 <i>&copy; Somby Ny Aina</i>
