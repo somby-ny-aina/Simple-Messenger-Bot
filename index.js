@@ -33,7 +33,7 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
   }
 };
 
-const sendGeneratedImage = async (senderId, imageUrl, pageAccessToken) => {
+const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   try {
     const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
       recipient: { id: senderId },
@@ -67,24 +67,49 @@ const sendGeneratedImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-const getAnswer = async (text, senderId) => {
+const generateImage = async (prompt, senderId) => {
   try {
-    if (text.startsWith('/generate')) {
-      const prompt = text.replace('/generate', '').trim();
+    const response = await axios.get(`https://joshweb.click/aigen`, {
+      params: {
+        prompt
+      }
+    });
 
-      const response = await axios.get(`https://joshweb.click/aigen`, {
-        params: { prompt }
-      });
-
-      const imageUrl = response.data.result;
-
-      return sendGeneratedImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
+    const imageUrl = response.data.result;
+    if (imageUrl) {
+      return sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
     } else {
-      return sendMessage(senderId, { text: "Send a valid command or start with /generate for image generation." }, PAGE_ACCESS_TOKEN);
+      return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
     }
   } catch (err) {
-    console.error("Reply:", err.response ? err.response.data : err);
-    return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
+    console.error("Image generation error:", err.response ? err.response.data : err);
+    return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
+  }
+};
+
+const getAnswer = async (text, senderId) => {
+  if (text.startsWith('/generate ')) {
+
+    const prompt = text.substring(10).trim();
+    if (!prompt) {
+      return sendMessage(senderId, { text: "❌ Please provide a prompt after /generate." }, PAGE_ACCESS_TOKEN);
+    }
+    return generateImage(prompt, senderId);
+  } else {
+    try {
+      const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
+        params: {
+          q: text,
+          uid: senderId
+        }
+      });
+
+      const botAnswer = response.data.result;
+      return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+    } catch (err) {
+      console.error("GPT-4O error:", err.response ? err.response.data : err);
+      return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
+    }
   }
 };
 
