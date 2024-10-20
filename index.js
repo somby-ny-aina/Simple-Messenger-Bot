@@ -96,7 +96,7 @@ const getAnswer = async (text, senderId) => {
     }
     return generateImage(prompt, senderId);
   } else if (text.startsWith('/lyrics')) {
-  const prompt = text.substring(8).trim();
+  const prompt = text.substring(7).trim();
 
   if (!prompt) {
     return sendMessage(senderId, { text: "Please provide a prompt after /lyrics." }, PAGE_ACCESS_TOKEN);
