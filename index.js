@@ -7,7 +7,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
-// Send a text message
 const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
     const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
@@ -34,8 +33,7 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
   }
 };
 
-// Send an image
-const sendImage = async (senderId, imageUrl, pageAccessToken) => {
+const sendGeneratedImage = async (senderId, imageUrl, pageAccessToken) => {
   try {
     const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
       recipient: { id: senderId },
@@ -69,29 +67,20 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-// Determine if the response contains a valid URL from "https://files.eqing.tech"
 const getAnswer = async (text, senderId) => {
   try {
-    const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: {
-        q: text,
-        uid: senderId
-      }
-    });
+    if (text.startsWith('/generate')) {
+      const prompt = text.replace('/generate', '').trim();
 
-    const botAnswer = response.data.result;
-    
-    // Check if the response contains a URL from "https://files.eqing.tech"
-    const eqingTechUrlRegex = /(https:\/\/files\.eqing\.tech[^\s]+)/g;
-    const foundUrls = botAnswer.match(eqingTechUrlRegex);
+      const response = await axios.get(`https://joshweb.click/aigen`, {
+        params: { prompt }
+      });
 
-    if (foundUrls) {
-      // If a valid eqing.tech URL is found, send it as an image
-      const imageUrl = foundUrls[0];
-      return sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
+      const imageUrl = response.data.result;
+
+      return sendGeneratedImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
     } else {
-      // Otherwise, send a text message
-      return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+      return sendMessage(senderId, { text: "Send a valid command or start with /generate for image generation." }, PAGE_ACCESS_TOKEN);
     }
   } catch (err) {
     console.error("Reply:", err.response ? err.response.data : err);
