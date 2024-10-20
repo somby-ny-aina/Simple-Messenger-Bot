@@ -1,6 +1,5 @@
 // By Somby Ny Aina 🇲🇬
 
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require("axios");
@@ -34,6 +33,40 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
   }
 };
 
+const sendImage = async (senderId, imageUrl, pageAccessToken) => {
+  try {
+    const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
+      recipient: { id: senderId },
+      message: {
+        attachment: {
+          type: "image",
+          payload: {
+            url: imageUrl,
+            is_reusable: true
+          }
+        }
+      }
+    }, {
+      params: {
+        access_token: pageAccessToken
+      },
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (response.data.error) {
+      console.error('Error sending image:', response.data.error);
+      throw new Error(response.data.error.message);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Error sending image:', error.message);
+    throw error;
+  }
+};
+
 const getAnswer = async (text, senderId) => {
   try {
     const response = await axios.get(`https://deku-rest-apis.ooguy.com/api/gpt-4o`, {
@@ -44,9 +77,16 @@ const getAnswer = async (text, senderId) => {
     });
 
     const botAnswer = response.data.result;
+    
+    const eqingTechUrlRegex = /(https:\/\/files\.eqing\.tech[^\s]+)/g;
+    const foundUrls = botAnswer.match(eqingTechUrlRegex);
 
-    // Directly send the response without UTF-8 check
-    return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+    if (foundUrls) {
+      const imageUrl = foundUrls[0];
+      return sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
+    } else {
+      return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+    }
   } catch (err) {
     console.error("Reply:", err.response ? err.response.data : err);
     return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
