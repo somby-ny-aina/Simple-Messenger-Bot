@@ -8,25 +8,51 @@ const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
 const sendMessage = async (senderId, message, pageAccessToken) => {
-  try {
-    const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
-      recipient: { id: senderId },
-      message
-    }, {
-      params: {
-        access_token: pageAccessToken
-      },
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-    
-    if (response.data.error) {
-      console.error('Error sending message:', response.data.error);
-      throw new Error(response.data.error.message);
+  const MAX_LENGTH = 2000;
+
+  const sendInChunks = async (fullMessage) => {
+    const messageParts = [];
+    for (let i = 0; i < fullMessage.length; i += MAX_LENGTH) {
+      messageParts.push(fullMessage.substring(i, i + MAX_LENGTH));
     }
 
-    return response.data;
+    for (const part of messageParts) {
+      await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
+        recipient: { id: senderId },
+        message: { text: part }
+      }, {
+        params: {
+          access_token: pageAccessToken
+        },
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+    }
+  };
+
+  try {
+    if (typeof message === 'string' && message.length > MAX_LENGTH) {
+
+      await sendInChunks(message);
+    } else {
+      const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
+        recipient: { id: senderId },
+        message
+      }, {
+        params: {
+          access_token: pageAccessToken
+        },
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.data.error) {
+        console.error('Error sending message:', response.data.error);
+        throw new Error(response.data.error.message);
+      }
+    }
   } catch (error) {
     console.error('Error sending message:', error.message);
     throw error;
