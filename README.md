@@ -1,7 +1,7 @@
 # You need to:
 <li>Create facebook page</li>
 <li>Create app and get access token at <a href="https://developers.facebook.com">Facebook Developers website</a></li>
-<li>Config webhook and add subscriptions: message, message_optin, message_postback</li>
+<li>Config webhook and add subscriptions: messages, messaging_optins, messaging_postbacks</li>
 <li>Make live your facebook app.</li>
 <li>Add your access token by environment variable configuration ( like on render )</li>
 <tt>key: "token"</tt><br>
