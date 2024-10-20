@@ -6,3 +6,9 @@
 <li>Add your access token by environment variable configuration ( like on render )</li>
 <tt>key: "token"</tt><br>
 <tt>value: "your access token"</tt>
+
+# Installation:
+<code>npm init - y && npm install express body-parser axios</code>
+
+# Run your bot:
+<code>node index.js</code>
