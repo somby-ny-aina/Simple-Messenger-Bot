@@ -104,9 +104,9 @@ const generateImage = async (prompt, senderId) => {
       }
     });
 
-    const imageUrl = response.data.result;
-    if (imageUrl) {
-      return sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
+    const imageU = response.data.result;
+    if (imageU) {
+      return sendImage(senderId, imageU, PAGE_ACCESS_TOKEN);
     } else {
       return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
     }
