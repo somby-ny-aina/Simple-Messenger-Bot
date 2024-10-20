@@ -1,5 +1,3 @@
-// Simple Messenger Bot by Somby Ny Aina
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require("axios");
@@ -43,13 +41,27 @@ const getAnswer = async (text, senderId) => {
       }
     });
 
-    const botAnswer = response.data;
+    const botAnswer = response.data.answer;
+    
+    if (typeof botAnswer !== 'string' || !isUTF8(botAnswer)) {
+      console.error('Invalid UTF-8 response from AI:', botAnswer);
+      return sendMessage(senderId, { text: "❌ Invalid response from the AI." }, PAGE_ACCESS_TOKEN);
+    }
+
     return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
   } catch (err) {
     console.error("Reply:", err.response ? err.response.data : err);
-    return "❌ Replying failed.";
+    return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
   }
 };
+
+function isUTF8(str) {
+  try {
+    return decodeURIComponent(escape(str)) === str;
+  } catch (e) {
+    return false;
+  }
+}
 
 const listenMessage = async (event) => {
   const senderID = event.sender.id;
