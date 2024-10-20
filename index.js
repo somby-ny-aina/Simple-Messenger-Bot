@@ -14,7 +14,7 @@ const sendMessage = async (senderId, message) => {
       `https://graph.facebook.com/v11.0/me/messages`,
       {
         recipient: { id: senderId },
-        message: typeof message === "object" ? message : { text: message },
+        message: typeof message === "string" ? { text: message } : message, // Ensure message is either text or an object
       },
       {
         params: { access_token: PAGE_ACCESS_TOKEN },
@@ -41,7 +41,7 @@ const getAnswer = async (text, senderId) => {
     );
 
     const botAnswer = response.data;
-    return sendMessage(senderId, botAnswer);
+    return sendMessage(senderId, botAnswer);  // Send the answer back to the user
 
   } catch (err) {
     console.error("Reply:", err.response ? err.response.data : err);
@@ -96,7 +96,7 @@ app.post('/webhook', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index.html'); // Serve the index.html file
 });
 
 app.listen(PORT, () => {
