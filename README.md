@@ -12,3 +12,7 @@
 
 # Run your bot:
 <code>node index.js</code>
+
+<h3>You can change the api. Thanks to Kshitiz 😇 for the api</h3>
+
+<i>&copy;Somby Ny Aina</i>
