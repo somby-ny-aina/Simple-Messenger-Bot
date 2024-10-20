@@ -95,7 +95,24 @@ const getAnswer = async (text, senderId) => {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /generate." }, PAGE_ACCESS_TOKEN);
     }
     return generateImage(prompt, senderId);
-  } else {
+  } else if (text.startsWith('/lyrics')) {
+  const prompt = text.substring(10).trim();
+
+  if (!prompt) {
+    return sendMessage(senderId, { text: "Please provide a prompt after /lyrics." }, PAGE_ACCESS_TOKEN);
+  }
+
+  const response = await axios.get(`https://lyrist.vercel.app/api/${encodeURIComponent(prompt)}`);
+  
+  const artist = response.data.artist;
+  const title = response.data.title;
+  const lyrics = response.data.lyrics;
+  const imageUrl = response.data.image;
+  const botAnswer = `Title: ${title}\nArtist: ${artist}\n\n\nLyrics:\n${lyrics}`;
+
+  return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+  return sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
+} else {
     try {
       const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
         params: {
