@@ -8,41 +8,43 @@ const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 const prompt = "You are Simon Peter.";
 
-const sendMessage = async (senderId, message) => {
+const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
-    const response = await axios.post(
-      `https://graph.facebook.com/v11.0/me/messages`,
-      {
-        recipient: { id: senderId },
-        message: typeof message === "string" ? { text: message } : message, // Ensure message is either text or an object
+    const response = await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
+      recipient: { id: senderId },
+      message
+    }, {
+      params: {
+        access_token: pageAccessToken
       },
-      {
-        params: { access_token: PAGE_ACCESS_TOKEN },
-        headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
       }
-    );
+    });
+    
+    if (response.data.error) {
+      console.error('Error sending message:', response.data.error);
+      throw new Error(response.data.error.message);
+    }
+
     return response.data;
-  } catch (err) {
-    console.error('Error sending message:', err.response ? err.response.data : err);
-    throw err;
+  } catch (error) {
+    console.error('Error sending message:', error.message);
+    throw error;
   }
 };
 
 const getAnswer = async (text, senderId) => {
   try {
-    const response = await axios.get(
-      `https://personal-ai-phi.vercel.app/kshitiz`,
-      {
-        params: {
-          prompt: prompt,
-          content: text
-        }
+    const response = await axios.get(`https://personal-ai-phi.vercel.app/kshitiz`, {
+      params: {
+        prompt: prompt,
+        content: text
       }
-    );
+    });
 
     const botAnswer = response.data;
-    return sendMessage(senderId, botAnswer);  // Send the answer back to the user
-
+    return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
   } catch (err) {
     console.error("Reply:", err.response ? err.response.data : err);
     return "❌ Replying failed.";
@@ -96,7 +98,7 @@ app.post('/webhook', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html'); // Serve the index.html file
+  res.sendFile(__dirname + '/index.html');
 });
 
 app.listen(PORT, () => {
