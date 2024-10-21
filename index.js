@@ -12,28 +12,30 @@ const setPersistentMenu = async () => {
     const response = await axios.post(
       `https://graph.facebook.com/v21.0/me/messenger_profile`,
       {
-        persistent_menu: [
-          {
-            locale: "default",
-            call_to_actions: [
-              {
-                type: "postback",
-                title: "/generate",
-                payload: "CARE_HELP"
-              },
-              {
-                type: "postback",
-                title: "/lyrics",
-                payload: "CARE_HELP"
-              },
-              {
-                type: "web_url",
-                title: "Follow admin",
-                url: "fb://profile/100086980630281"
-              }
+    "persistent_menu": [
+        {
+            "locale": "default",
+            "composer_input_disabled": false,
+            "call_to_actions": [
+                {
+                    "type": "postback",
+                    "title": "/generate",
+                    "payload": "CARE_HELP"
+                },
+                {
+                    "type": "postback",
+                    "title": "/lyrics",
+                    "payload": "CURATION"
+                },
+                {
+                    "type": "web_url",
+                    "title": "Follow admin",
+                    "url": "fb://profile/100086980630281",
+                    "webview_height_ratio": "full"
+                }
             ]
-          }
-        ]
+        }
+    ]
       },
       {
         params: { access_token: PAGE_ACCESS_TOKEN },
