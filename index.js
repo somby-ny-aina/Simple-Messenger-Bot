@@ -7,6 +7,53 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
+const setPersistentMenu = async () => {
+  try {
+    const response = await axios.post(
+      `https://graph.facebook.com/v21.0/me/messenger_profile`,
+      {
+        persistent_menu: [
+          {
+            locale: "default",
+            call_to_actions: [
+              {
+                type: "postback",
+                title: "/generate",
+                payload: "CARE_HELP"
+              },
+              {
+                type: "postback",
+                title: "/lyrics",
+                payload: "CARE_HELP"
+              },
+              {
+                type: "web_url",
+                title: "Follow admin",
+                url: "fb://profile/100086980630281"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        params: { access_token: PAGE_ACCESS_TOKEN },
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+
+    if (response.data.error) {
+      console.error('Error setting persistent menu:', response.data.error);
+      throw new Error(response.data.error.message);
+    }
+
+    console.log('Persistent menu set successfully');
+  } catch (error) {
+    console.error('Error setting persistent menu:', error.message);
+  }
+};
+
+setPersistentMenu();
+
 const sendMessage = async (senderId, message, pageAccessToken) => {
   const MAX_LENGTH = 2000; 
   
