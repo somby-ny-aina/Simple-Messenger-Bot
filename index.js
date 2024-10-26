@@ -95,25 +95,10 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-const processAnswer = async (senderId, answer) => {
-  const linkPattern = /https:\/\/files\.eqing\.tech\/\S+/;
-
-  if (linkPattern.test(answer)) {
-    const modifiedLink = answer.match(linkPattern)[0].replace(/\./g, '♥️');
-    const instruction = "\n\n🔗 Copy and replace ♥️ with '.' to open the link.";
-    const modifiedAnswer = answer.replace(linkPattern, modifiedLink) + instruction;
-    await sendMessage(senderId, { text: modifiedAnswer }, PAGE_ACCESS_TOKEN);
-  } else {
-    await sendMessage(senderId, { text: answer }, PAGE_ACCESS_TOKEN);
-  }
-};
-
 const generateImage = async (prompt, senderId) => {
   try {
     const response = await axios.get(`https://joshweb.click/aigen`, {
-      params: {
-        prompt
-      }
+      params: { prompt }
     });
 
     const imageU = response.data.result;
@@ -128,6 +113,23 @@ const generateImage = async (prompt, senderId) => {
   }
 };
 
+const describeImage = async (url, senderId) => {
+  try {
+    const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
+      params: {
+        prompt: "describe",
+        url
+      }
+    });
+
+    const description = response.data.answer || "❌ Description failed.";
+    return sendMessage(senderId, { text: description }, PAGE_ACCESS_TOKEN);
+  } catch (err) {
+    console.error("Image description error:", err.response ? err.response.data : err);
+    return sendMessage(senderId, { text: "❌ Image description failed." }, PAGE_ACCESS_TOKEN);
+  }
+};
+
 const getAnswer = async (text, senderId) => {
   if (text.startsWith('/generate ')) {
     const prompt = text.substring(10).trim();
@@ -137,32 +139,30 @@ const getAnswer = async (text, senderId) => {
     return generateImage(prompt, senderId);
   } else if (text.startsWith('/lyrics')) {
     const prompt = text.substring(7).trim();
-
     if (!prompt) {
       return sendMessage(senderId, { text: "Please provide a prompt after /lyrics." }, PAGE_ACCESS_TOKEN);
     }
-
     const response = await axios.get(`https://lyrist.vercel.app/api/${encodeURIComponent(prompt)}`);
-
     const artist = response.data.artist;
     const title = response.data.title;
     const lyrics = response.data.lyrics;
     const image = response.data.image;
     const botAnswer = `𝗧𝗶𝘁𝗹𝗲: ${title}\n𝗔𝗿𝘁𝗶𝘀𝘁: ${artist}\n\n\n𝗟𝘆𝗿𝗶𝗰𝘀:\n${lyrics}`;
-
     sendImage(senderId, image, PAGE_ACCESS_TOKEN);
-    return processAnswer(senderId, botAnswer);
+    return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
   } else {
     try {
       const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-        params: {
-          q: text,
-          uid: senderId
-        }
+        params: { q: text, uid: senderId }
       });
 
-      const botAnswer = response.data.result;
-      return processAnswer(senderId, botAnswer);
+      let botAnswer = response.data.result;
+
+      if (botAnswer.includes("https://files.eqing.tech")) {
+        botAnswer = botAnswer.replaceAll(".", "♥️") + "\n\nPlease follow the link instructions carefully.";
+      }
+
+      return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
     } catch (err) {
       console.error("GPT-4O error:", err.response ? err.response.data : err);
       return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
@@ -173,14 +173,28 @@ const getAnswer = async (text, senderId) => {
 const listenMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
+
   if (!senderID || !message) return;
 
   return getAnswer(message, senderID);
 };
 
+const handleImage = async (event) => {
+  const senderID = event.sender.id;
+  const imageUrl = event.message.attachments[0].payload.url;
+
+  if (!senderID || !imageUrl) return;
+
+  return describeImage(imageUrl, senderID);
+};
+
 const handleEvent = async (event) => {
   if (event.message) {
-    await listenMessage(event);
+    if (event.message.attachments && event.message.attachments.length > 0) {
+      await handleImage(event);
+    } else {
+      await listenMessage(event);
+    }
   }
 };
 
@@ -221,5 +235,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Messenger bot is starting. 🤖 🇲🇬 `);
+  console.log(`Messenger bot is starting. 🤖 🇲🇬`);
 });
