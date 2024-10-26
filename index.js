@@ -122,7 +122,7 @@ const describeImage = async (url, senderId) => {
       }
     });
 
-    const description = response.data.answer || "❌ Description failed.";
+    const description = response.data.description || "❌ Description failed.";
     return sendMessage(senderId, { text: description }, PAGE_ACCESS_TOKEN);
   } catch (err) {
     console.error("Image description error:", err.response ? err.response.data : err);
@@ -190,7 +190,7 @@ const handleImage = async (event) => {
 
 const handleEvent = async (event) => {
   if (event.message) {
-    if (event.message.attachments && event.message.attachments.length > 0) {
+    if (event.message.attachments && event.message.attachments[0].type === "image") {
       await handleImage(event);
     } else {
       await listenMessage(event);
