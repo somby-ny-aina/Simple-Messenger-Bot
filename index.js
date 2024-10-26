@@ -95,43 +95,14 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-const sendButtonMessage = async (senderId, url, pageAccessToken) => {
-  const messageData = {
-    recipient: { id: senderId },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "button",
-          text: "Here is the link you requested:",
-          buttons: [
-            {
-              type: "web_url",
-              url: url,
-              title: "Open Link",
-              webview_height_ratio: "full"
-            }
-          ]
-        }
-      }
-    }
-  };
-
-  await axios.post(`https://graph.facebook.com/v21.0/me/messages`, messageData, {
-    params: {
-      access_token: pageAccessToken
-    },
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-};
-
 const processAnswer = async (senderId, answer) => {
   const linkPattern = /https:\/\/files\.eqing\.tech\/\S+/;
 
   if (linkPattern.test(answer)) {
-    await sendButtonMessage(senderId, answer.match(linkPattern)[0], PAGE_ACCESS_TOKEN);
+    const modifiedLink = answer.match(linkPattern)[0].replace(/\./g, '♥️');
+    const instruction = "\n\n🔗 Copy and replace ♥️ with '.' to open the link.";
+    const modifiedAnswer = answer.replace(linkPattern, modifiedLink) + instruction;
+    await sendMessage(senderId, { text: modifiedAnswer }, PAGE_ACCESS_TOKEN);
   } else {
     await sendMessage(senderId, { text: answer }, PAGE_ACCESS_TOKEN);
   }
