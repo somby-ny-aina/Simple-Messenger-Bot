@@ -118,7 +118,7 @@ const describeImage = async (url, senderId) => {
     const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
       params: {
         prompt: "describe",
-        url
+        url: url
       }
     });
 
