@@ -122,7 +122,7 @@ const describeImage = async (url, senderId) => {
       }
     });
 
-    const description = response.data.description || "❌ Description failed.";
+    const description = response.data.answer || "❌ Description failed.";
     return sendMessage(senderId, { text: description }, PAGE_ACCESS_TOKEN);
   } catch (err) {
     console.error("Image description error:", err.response ? err.response.data : err);
