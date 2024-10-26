@@ -8,8 +8,8 @@ const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
 const sendMessage = async (senderId, message, pageAccessToken) => {
-  const MAX_LENGTH = 2000; 
-  
+  const MAX_LENGTH = 2000;
+
   const splitMessage = (text) => {
     const messageParts = [];
     for (let i = 0; i < text.length; i += MAX_LENGTH) {
@@ -21,6 +21,7 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
   try {
     if (typeof message.text === 'string' && message.text.length > MAX_LENGTH) {
       const messageParts = splitMessage(message.text);
+
       for (const part of messageParts) {
         await axios.post(`https://graph.facebook.com/v21.0/me/messages`, {
           recipient: { id: senderId },
@@ -51,6 +52,7 @@ const sendMessage = async (senderId, message, pageAccessToken) => {
         console.error('Error sending message:', response.data.error);
         throw new Error(response.data.error.message);
       }
+
       return response.data;
     }
   } catch (error) {
@@ -85,6 +87,7 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
       console.error('Error sending image:', response.data.error);
       throw new Error(response.data.error.message);
     }
+
     return response.data;
   } catch (error) {
     console.error('Error sending image:', error.message);
@@ -92,25 +95,46 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-const sendUrlButton = async (senderId, url) => {
-  const message = {
-    "attachment": {
-      "type": "template",
-      "payload": {
-        "template_type": "button",
-        "text": "Click the button to open the link:",
-        "buttons": [
-          {
-            "type": "web_url",
-            "url": url,
-            "title": "Open Link",
-            "webview_height_ratio": "full"
-          }
-        ]
+const sendButtonMessage = async (senderId, url, pageAccessToken) => {
+  const messageData = {
+    recipient: { id: senderId },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "button",
+          text: "Here is the link you requested:",
+          buttons: [
+            {
+              type: "web_url",
+              url: url,
+              title: "Open Link",
+              webview_height_ratio: "full"
+            }
+          ]
+        }
       }
     }
   };
-  await sendMessage(senderId, message, PAGE_ACCESS_TOKEN);
+
+  await axios.post(`https://graph.facebook.com/v21.0/me/messages`, messageData, {
+    params: {
+      access_token: pageAccessToken
+    },
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+};
+
+const processAnswer = async (senderId, answer) => {
+  const linkPattern = /https:\/\/files\.eqing\.tech\/\S+/;
+
+  if (linkPattern.test(answer)) {
+    await sendButtonMessage(senderId, answer.match(linkPattern)[0], PAGE_ACCESS_TOKEN);
+  } else {
+    await sendMessage(senderId, { text: answer }, PAGE_ACCESS_TOKEN);
+  }
 };
 
 const generateImage = async (prompt, senderId) => {
@@ -133,11 +157,6 @@ const generateImage = async (prompt, senderId) => {
   }
 };
 
-const extractLink = (text) => {
-  const regex = /https?:\/\/files\.eqing\.tech\/[^\s]+/g;
-  return text.match(regex) ? text.match(regex)[0] : null;
-};
-
 const getAnswer = async (text, senderId) => {
   if (text.startsWith('/generate ')) {
     const prompt = text.substring(10).trim();
@@ -147,11 +166,13 @@ const getAnswer = async (text, senderId) => {
     return generateImage(prompt, senderId);
   } else if (text.startsWith('/lyrics')) {
     const prompt = text.substring(7).trim();
+
     if (!prompt) {
       return sendMessage(senderId, { text: "Please provide a prompt after /lyrics." }, PAGE_ACCESS_TOKEN);
     }
 
     const response = await axios.get(`https://lyrist.vercel.app/api/${encodeURIComponent(prompt)}`);
+
     const artist = response.data.artist;
     const title = response.data.title;
     const lyrics = response.data.lyrics;
@@ -159,7 +180,7 @@ const getAnswer = async (text, senderId) => {
     const botAnswer = `𝗧𝗶𝘁𝗹𝗲: ${title}\n𝗔𝗿𝘁𝗶𝘀𝘁: ${artist}\n\n\n𝗟𝘆𝗿𝗶𝗰𝘀:\n${lyrics}`;
 
     sendImage(senderId, image, PAGE_ACCESS_TOKEN);
-    return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+    return processAnswer(senderId, botAnswer);
   } else {
     try {
       const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
@@ -170,13 +191,7 @@ const getAnswer = async (text, senderId) => {
       });
 
       const botAnswer = response.data.result;
-      const extractedLink = extractLink(botAnswer);
-
-      if (extractedLink) {
-        await sendUrlButton(senderId, extractedLink);
-      }
-
-      return;
+      return processAnswer(senderId, botAnswer);
     } catch (err) {
       console.error("GPT-4O error:", err.response ? err.response.data : err);
       return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
@@ -195,15 +210,6 @@ const listenMessage = async (event) => {
 const handleEvent = async (event) => {
   if (event.message) {
     await listenMessage(event);
-  } else if (event.postback) {
-    const senderID = event.sender.id;
-    const payload = event.postback.payload;
-
-    if (payload === "GENERATE") {
-      return getAnswer("/generate ", senderID);
-    } else if (payload === "LYRICS") {
-      return getAnswer("/lyrics ", senderID);
-    }
   }
 };
 
