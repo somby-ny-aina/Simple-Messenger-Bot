@@ -133,6 +133,11 @@ const generateImage = async (prompt, senderId) => {
   }
 };
 
+const extractLink = (text) => {
+  const regex = /https?:\/\/files\.eqing\.tech\/[^\s]+/g;
+  return text.match(regex) ? text.match(regex)[0] : null;
+};
+
 const getAnswer = async (text, senderId) => {
   if (text.startsWith('/generate ')) {
     const prompt = text.substring(10).trim();
@@ -165,12 +170,13 @@ const getAnswer = async (text, senderId) => {
       });
 
       const botAnswer = response.data.result;
-      
-      if (botAnswer.includes("https://files.eqing.tech")) {
-        await sendUrlButton(senderId, "https://files.eqing.tech");
+      const extractedLink = extractLink(botAnswer);
+
+      if (extractedLink) {
+        await sendUrlButton(senderId, extractedLink);
       }
 
-      return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+      return;
     } catch (err) {
       console.error("GPT-4O error:", err.response ? err.response.data : err);
       return sendMessage(senderId, { text: "❌ Replying failed." }, PAGE_ACCESS_TOKEN);
