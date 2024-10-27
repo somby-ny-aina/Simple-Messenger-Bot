@@ -116,7 +116,7 @@ const generateImage = async (prompt, senderId) => {
 const describeImage = async (url, senderId) => {
   try {
     const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-      params: { prompt: "describe", url }
+      params: { prompt: "describe", url: url}
     });
 
     const description = response.data.answer || "Description failed.";
