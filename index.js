@@ -169,7 +169,7 @@ const getAnswer = async (text, senderId) => {
 
 const listenMessage = async (event) => {
   const senderID = event.sender.id;
-  const message = event.message.text;
+  const message = event.message;
 
   if (!senderID || !message) return;
 
