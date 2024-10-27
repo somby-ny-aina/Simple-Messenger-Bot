@@ -113,10 +113,10 @@ const generateImage = async (prompt, senderId) => {
   }
 };
 
-const describeImage = async (url, senderId) => {
+const describeImage = async (iurl, senderId) => {
   try {
     const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-      params: { prompt: "describe", url: url}
+      params: { prompt: "describe", url: iurl}
     });
 
     const description = response.data.answer || "Description failed.";
@@ -178,11 +178,11 @@ const listenMessage = async (event) => {
 
 const handleImage = async (event) => {
   const senderID = event.sender.id;
-  const imageUrl = event.message.attachments[0].payload.url;
+  const imUrl = event.message.attachments[0].payload.url;
 
-  if (!senderID || !imageUrl) return;
+  if (!senderID || !imUrl) return;
 
-  return describeImage(imageUrl, senderID);
+  return describeImage(imUrl, senderID);
 };
 
 const handleEvent = async (event) => {
