@@ -1,4 +1,4 @@
-// Somby Ny Aina 
+// By Somby Ny Aina 🇲🇬
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -95,54 +95,74 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-const generateBingImages = async (prompt, senderId) => {
+const generateImage = async (prompt, senderId) => {
+  try {
+    const response = await axios.get(`https://joshweb.click/aigen`, {
+      params: { prompt }
+    });
+
+    const imageU = response.data.result;
+    if (imageU) {
+      return sendImage(senderId, imageU, PAGE_ACCESS_TOKEN);
+    } else {
+      return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
+    }
+  } catch (err) {
+    console.error("Image generation error:", err.response ? err.response.data : err);
+    return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
+  }
+};
+
+const describeImage = async (url, prompt, senderId) => {
+  try {
+    const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
+      params: { prompt, url }
+    });
+
+    const description = response.data.answer || "Description failed.";
+    return sendMessage(senderId, { text: description }, PAGE_ACCESS_TOKEN);
+  } catch (err) {
+    console.error("Image description error:", err.response ? err.response.data : err);
+    return sendMessage(senderId, { text: "❌ Image description failed." }, PAGE_ACCESS_TOKEN);
+  }
+};
+
+const generateBingImage = async (prompt, senderId) => {
   try {
     const response = await axios.get(`https://jerome-web.onrender.com/service/api/bing`, {
       params: { prompt: encodeURIComponent(prompt) }
     });
 
-    if (response.data.success && response.data.result) {
-      const imageUrls = response.data.result;
-
-      for (const imageUrl of imageUrls) {
+    const images = response.data.result;
+    if (images && images.length === 4) {
+      for (const imageUrl of images) {
         await sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
       }
-      return sendMessage(senderId, { text: "✅ Bing images generated successfully." }, PAGE_ACCESS_TOKEN);
     } else {
-      return sendMessage(senderId, { text: "❌ Bing image generation failed." }, PAGE_ACCESS_TOKEN);
+      return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
     }
   } catch (err) {
     console.error("Bing image generation error:", err.response ? err.response.data : err);
-    return sendMessage(senderId, { text: "❌ Bing image generation failed due to an internal error." }, PAGE_ACCESS_TOKEN);
+    return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
   }
 };
 
-const getAnswer = async (text, senderId) => {
+const getAnswer = async (text, senderId, repliedTo) => {
   if (text.startsWith('/generate ')) {
     const prompt = text.substring(10).trim();
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /generate." }, PAGE_ACCESS_TOKEN);
     }
     return generateImage(prompt, senderId);
-  } else if (text.startsWith('/lyrics')) {
-    const prompt = text.substring(7).trim();
-    if (!prompt) {
-      return sendMessage(senderId, { text: "Please provide a prompt after /lyrics." }, PAGE_ACCESS_TOKEN);
-    }
-    const response = await axios.get(`https://lyrist.vercel.app/api/${encodeURIComponent(prompt)}`);
-    const artist = response.data.artist;
-    const title = response.data.title;
-    const lyrics = response.data.lyrics;
-    const image = response.data.image;
-    const botAnswer = `𝗧𝗶𝘁𝗹𝗲: ${title}\n𝗔𝗿𝘁𝗶𝘀𝘁: ${artist}\n\n\n𝗟𝘆𝗿𝗶𝗰𝘀:\n${lyrics}`;
-    sendImage(senderId, image, PAGE_ACCESS_TOKEN);
-    return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
-  } else if (text.startsWith('/bing ')) {
-    const prompt = text.substring(6).trim();
+  } else if (text.startsWith('/bing')) {
+    const prompt = text.substring(5).trim();
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /bing." }, PAGE_ACCESS_TOKEN);
     }
-    return generateBingImages(prompt, senderId);
+    return generateBingImage(prompt, senderId);
+  } else if (repliedTo && repliedTo.type === 'image') {
+    const imageUrl = repliedTo.url;
+    return describeImage(imageUrl, text, senderId);
   } else {
     try {
       const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
@@ -166,10 +186,14 @@ const getAnswer = async (text, senderId) => {
 const listenMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
+  const repliedTo = event.message.reply_to ? {
+    type: event.message.reply_to.attachments[0].type,
+    url: event.message.reply_to.attachments[0].payload.url
+  } : null;
 
   if (!senderID || !message) return;
 
-  return getAnswer(message, senderID);
+  return getAnswer(message, senderID, repliedTo);
 };
 
 const handleImage = async (event) => {
@@ -178,7 +202,6 @@ const handleImage = async (event) => {
 
   if (!senderID || !imageUrl) return;
 
-  return describeImage(imageUrl, senderID);
 };
 
 const handleEvent = async (event) => {
