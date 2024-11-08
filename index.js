@@ -1,4 +1,4 @@
-// By Somby Ny Aina 🇲🇬
+// Somby Ny Aina 
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -95,35 +95,25 @@ const sendImage = async (senderId, imageUrl, pageAccessToken) => {
   }
 };
 
-const generateImage = async (prompt, senderId) => {
+const generateBingImages = async (prompt, senderId) => {
   try {
-    const response = await axios.get(`https://joshweb.click/aigen`, {
-      params: { prompt }
+    const response = await axios.get(`https://jerome-web.onrender.com/service/api/bing`, {
+      params: { prompt: encodeURIComponent(prompt) }
     });
 
-    const imageU = response.data.result;
-    if (imageU) {
-      return sendImage(senderId, imageU, PAGE_ACCESS_TOKEN);
+    if (response.data.success && response.data.result) {
+      const imageUrls = response.data.result;
+
+      for (const imageUrl of imageUrls) {
+        await sendImage(senderId, imageUrl, PAGE_ACCESS_TOKEN);
+      }
+      return sendMessage(senderId, { text: "✅ Bing images generated successfully." }, PAGE_ACCESS_TOKEN);
     } else {
-      return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
+      return sendMessage(senderId, { text: "❌ Bing image generation failed." }, PAGE_ACCESS_TOKEN);
     }
   } catch (err) {
-    console.error("Image generation error:", err.response ? err.response.data : err);
-    return sendMessage(senderId, { text: "❌ Image generation failed." }, PAGE_ACCESS_TOKEN);
-  }
-};
-
-const describeImage = async (iurl, senderId) => {
-  try {
-    const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-      params: { prompt: "describe", url: iurl}
-    });
-
-    const description = response.data.answer || "Description failed.";
-    return sendMessage(senderId, { text: description }, PAGE_ACCESS_TOKEN);
-  } catch (err) {
-    console.error("Image description error:", err.response ? err.response.data : err);
-    return sendMessage(senderId, { text: "❌ Image description failed." }, PAGE_ACCESS_TOKEN);
+    console.error("Bing image generation error:", err.response ? err.response.data : err);
+    return sendMessage(senderId, { text: "❌ Bing image generation failed due to an internal error." }, PAGE_ACCESS_TOKEN);
   }
 };
 
@@ -147,6 +137,12 @@ const getAnswer = async (text, senderId) => {
     const botAnswer = `𝗧𝗶𝘁𝗹𝗲: ${title}\n𝗔𝗿𝘁𝗶𝘀𝘁: ${artist}\n\n\n𝗟𝘆𝗿𝗶𝗰𝘀:\n${lyrics}`;
     sendImage(senderId, image, PAGE_ACCESS_TOKEN);
     return sendMessage(senderId, { text: botAnswer }, PAGE_ACCESS_TOKEN);
+  } else if (text.startsWith('/bing ')) {
+    const prompt = text.substring(6).trim();
+    if (!prompt) {
+      return sendMessage(senderId, { text: "❌ Please provide a prompt after /bing." }, PAGE_ACCESS_TOKEN);
+    }
+    return generateBingImages(prompt, senderId);
   } else {
     try {
       const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
@@ -178,11 +174,11 @@ const listenMessage = async (event) => {
 
 const handleImage = async (event) => {
   const senderID = event.sender.id;
-  const imUrl = event.message.attachments[0].payload.url;
+  const imageUrl = event.message.attachments[0].payload.url;
 
-  if (!senderID || !imUrl) return;
+  if (!senderID || !imageUrl) return;
 
-  return describeImage(imUrl, senderID);
+  return describeImage(imageUrl, senderID);
 };
 
 const handleEvent = async (event) => {
