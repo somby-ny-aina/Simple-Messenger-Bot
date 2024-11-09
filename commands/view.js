@@ -3,17 +3,26 @@ const axios = require('axios');
 module.exports = {
   execute: async (args, senderId, sendMessage, event) => {
     try {
-      if (!event.message.reply_to) {
+      if (!event.message.reply_to || !event.message.reply_to.mid) {
         return sendMessage(senderId, { text: "❌ Please reply to a photo with this command." });
       }
 
       const replyMessageId = event.message.reply_to.mid;
+      const PAGE_ACCESS_TOKEN = process.env.token; // Ensure this token is set
 
-      if (!event.message.attachments || event.message.attachments[0].type !== "photo") {
+      const originalMessage = await axios.get(
+        `https://graph.facebook.com/v12.0/${replyMessageId}`,
+        {
+          params: { access_token: PAGE_ACCESS_TOKEN }
+        }
+      );
+
+      const attachments = originalMessage.data.attachments?.data;
+      if (!attachments || attachments[0].type !== "image") {
         return sendMessage(senderId, { text: "❌ Please reply to a photo with this command." });
       }
 
-      const imageUrl = event.message.attachments[0].url;
+      const imageUrl = attachments[0].payload.url;
       const prompt = args || "Describe this image";
 
       const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
