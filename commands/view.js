@@ -3,6 +3,8 @@ const axios = require('axios');
 module.exports = {
   execute: async (args, senderId, sendMessage, event) => {
     try {
+      console.log("Event object:", JSON.stringify(event, null, 2));
+
       if (
         event &&
         event.message &&
