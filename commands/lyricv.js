@@ -3,7 +3,7 @@ const axios = require("axios");
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
-      return sendMessage(senderId, { text: "❌ Please provide a search query after /lyricvideo." });
+      return sendMessage(senderId, { text: "❌ Please provide a search query after /lyricv." });
     }
 
     try {
@@ -16,8 +16,7 @@ module.exports = {
         const { videoUrl } = selectedVideo;
 
         await sendMessage(senderId, {
-          text: `Enjoy the video!`,
-          attachment: { type: "image", payload: { url: videoUrl, is_reusable: true } }
+          attachment: { type: "video", payload: { url: videoUrl, is_reusable: true } }
         });
       } else {
         sendMessage(senderId, { text: `❌ No videos found for "${query}".` });
