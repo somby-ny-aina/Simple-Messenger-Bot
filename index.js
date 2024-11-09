@@ -89,6 +89,10 @@ app.post('/webhook', (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
 app.listen(PORT, () => {
   console.log(`Messenger bot is starting. 🤖 🇲🇬`);
 });
