@@ -5,9 +5,9 @@ module.exports = {
     try {
       if (
         event.type !== "message_reply" ||
-        !event.message.text.attachments ||
-        !event.message.text.attachments[0] ||
-        event.message.text.attachments[0].type !== "photo"
+        !event.message.reply_to ||
+        !event.message.reply_to.attachments ||
+        event.message.reply_to.attachments[0].type !== "photo"
       ) {
         return sendMessage(senderId, { text: "❌ Please reply to a photo with this command." });
       }
