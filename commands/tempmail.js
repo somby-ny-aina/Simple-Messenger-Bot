@@ -1,11 +1,10 @@
 const axios = require('axios');
 
 module.exports = {
-  // Function to generate temporary email
-  execute: async (args, senderId, sendMessage, event) => {
-    console.log('Received args:', args); // Debugging log
+  execute: async (prompt, senderId, sendMessage, event) => {
+    console.log('Received args:', prompt); // Debugging log
 
-    if (args[0] === 'gen') {
+    if (prompt === 'gen') {
       try {
         const response = await axios.get('https://c-v1.onrender.com/tempmail/gen');
         
@@ -19,11 +18,11 @@ module.exports = {
         console.error("Error generating temp email:", error.message);
         await sendMessage(senderId, { text: "❌ Error generating temp email." });
       }
-    } else if (args[0] === 'check') {
-      if (!args[1]) return sendMessage(senderId, { text: "❌ Please provide an email to check after /tempmail check." });
+    } else {
+      if (!prompt) return sendMessage(senderId, { text: "❌ Please provide an email to check after /tempmail check." });
 
-      const emailToCheck = args[1]; // Use the email passed in the args
-      console.log('Email to check:', emailToCheck); // Debugging log
+      const emailToCheck = prompt
+      console.log('Email to check:', emailToCheck);
 
       try {
         const response = await axios.get('https://c-v1.onrender.com/tempmail/inbox', { params: { email: emailToCheck } });
