@@ -16,29 +16,29 @@ module.exports = {
       }
 
       const characterInfo = `
-      Character: ${character.title}
+      𝗖𝗛𝗔𝗥𝗔𝗖𝗧𝗘𝗥: ${character.title}
 
-      Description: ${character.description}
+      𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻: ${character.description}
 
-      Name: ${character.info.Name}
+      𝗡𝗮𝗺𝗲: ${character.info.Name}
 
-      Price: ${character.info.Price}
+      𝗣𝗿𝗶𝗰𝗲: ${character.info.Price}
 
-      Gender: ${character.info.Gender}
+      𝗚𝗲𝗻𝗱𝗲𝗿: ${character.info.Gender}
 
-      Age: ${character.info.Age}
+      𝗔𝗴𝗲: ${character.info.Age}
 
-      Day of Birth: ${character.info["Day of Birth"]}
+      𝗗𝗮𝘆 𝗼𝗳 𝗯𝗶𝗿𝘁𝗵: ${character.info["Day of Birth"]}
 
-      Occupation: ${character.info.Occupation}
+      𝗢𝗰𝗰𝘂𝗽𝗮𝘁𝗶𝗼𝗻: ${character.info.Occupation}
 
-      Hobby: ${character.info.Hobby}
+      𝗛𝗼𝗯𝗯𝘆: ${character.info.Hobby}
       
-      Ability: ${character.info.Ability}
+      𝗔𝗯𝗶𝗹𝗶𝘁𝘆: ${character.info.Ability}
       
-      Awaken Name: ${character.info["Awaken Name"]}
+      𝗔𝘄𝗮𝗸𝗲𝗻 𝗡𝗮𝗺𝗲: ${character.info["Awaken Name"]}
       
-      Unlocked by: ${character.info["Unlocked by"]}
+      𝗨𝗻𝗹𝗼𝗰𝗸𝗲𝗱 𝗯𝘆: ${character.info["Unlocked by"]}
       `;
 
       await sendMessage(senderId, { text: characterInfo });
