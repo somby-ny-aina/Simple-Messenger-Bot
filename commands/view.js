@@ -16,7 +16,7 @@ module.exports = {
       const prompt = args || "Describe this image";
 
       const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-        params: { prompt, url: imageUrl }
+        params: { prompt: prompt, url: imageUrl }
       });
 
       if (response.data && response.data.result) {
