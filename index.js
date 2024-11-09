@@ -116,7 +116,7 @@ const generateImage = async (prompt, senderId) => {
 const describeImage = async (url, prompt, senderId) => {
   try {
     const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-      params: { prompt, url }
+      params: { prompt: prompt, url: url }
     });
 
     const description = response.data.answer || "Description failed.";
@@ -154,8 +154,8 @@ const getAnswer = async (text, senderId, repliedTo) => {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /generate." }, PAGE_ACCESS_TOKEN);
     }
     return generateImage(prompt, senderId);
-  } else if (text.startsWith('/bing')) {
-    const prompt = text.substring(5).trim();
+  } else if (text.startsWith('/bing ')) {
+    const prompt = text.substring(6).trim();
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /bing." }, PAGE_ACCESS_TOKEN);
     }
@@ -186,10 +186,13 @@ const getAnswer = async (text, senderId, repliedTo) => {
 const listenMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
-  const repliedTo = event.message.reply_to ? {
-    type: event.message.reply_to.attachments[0].type,
-    url: event.message.reply_to.attachments[0].payload.url
-  } : null;
+
+  const repliedTo = event.message.reply_to && event.message.reply_to.attachments && event.message.reply_to.attachments[0]
+    ? {
+        type: event.message.reply_to.attachments[0].type,
+        url: event.message.reply_to.attachments[0].payload.url
+      }
+    : null;
 
   if (!senderID || !message) return;
 
