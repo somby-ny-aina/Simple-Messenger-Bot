@@ -42,6 +42,16 @@ const chatGpt4o = async (text, senderId) => {
   }
 };
 
+// Function to handle commands and pass `event` to commands
+const handleCommand = async (commandName, args, senderId, event) => {
+  const command = commands[commandName];
+  if (command) {
+    await command.execute(args.join(' '), senderId, sendMessage, event);
+  } else {
+    await sendMessage(senderId, { text: "❌ Unknown command." });
+  }
+};
+
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
@@ -56,12 +66,7 @@ const handleMessage = async (event) => {
 
   if (message.startsWith('/')) {
     const [cmd, ...args] = message.slice(1).split(' ');
-    const command = commands[cmd];
-    if (command) {
-      return command.execute(args.join(' '), senderID, sendMessage);
-    } else {
-      return sendMessage(senderID, { text: "❌ Unknown command." });
-    }
+    return handleCommand(cmd, args, senderID, event); // Pass event here
   } else {
     const botResponse = await chatGpt4o(message, senderID);
     return sendMessage(senderID, { text: botResponse });
