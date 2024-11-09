@@ -17,7 +17,7 @@ module.exports = {
 
         await sendMessage(senderId, {
           text: `Enjoy the video!`,
-          attachment: { type: "video", payload: { url: videoUrl, is_reusable: true } }
+          attachment: { type: "image", payload: { url: videoUrl, is_reusable: true } }
         });
       } else {
         sendMessage(senderId, { text: `❌ No videos found for "${query}".` });
