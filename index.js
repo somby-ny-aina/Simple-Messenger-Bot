@@ -49,8 +49,8 @@ const handleMessage = async (event) => {
   if (!senderID || !message) return;
 
   if (message.toLowerCase() === 'help') {
-    const commandList = Object.keys(commands).map(cmd => `/${cmd}`).join('\n');
-    const helpMessage = `🤖 Smo bot 🤖\n\n📜 Available commands:\n${commandList}\n\n Use "/" followed by the command name.`;
+    const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
+    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰──────────────❍`;
     return sendMessage(senderID, { text: helpMessage });
   }
 
