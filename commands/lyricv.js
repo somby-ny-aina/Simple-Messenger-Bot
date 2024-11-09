@@ -7,7 +7,7 @@ module.exports = {
     }
 
     try {
-      const response = await axios.get(`https://lyric-search-neon.vercel.app/kshitiz`, { params: { keyword: query } });
+      const response = await axios.get(`https://lyric-search-neon.vercel.app/kshitiz`, { params: { keyword: prompt } });
       const videos = response.data;
 
       if (videos && Array.isArray(videos) && videos.length > 0) {
