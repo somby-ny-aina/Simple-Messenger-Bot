@@ -40,8 +40,6 @@ module.exports = {
         console.error("Error checking inbox:", error.message);
         await sendMessage(senderId, { text: "❌ Error checking inbox." });
       }
-    } else {
-      await sendMessage(senderId, { text: "❌ Invalid command. Use /tempmail gen or /tempmail check [email]." });
     }
   }
 };
