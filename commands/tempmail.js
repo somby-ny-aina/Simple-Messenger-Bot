@@ -1,10 +1,9 @@
 const axios = require('axios');
 const { sendMessage } = require('../utils');
 
-let tempEmail = null; // Variable to store the generated temporary email
+let tempEmail = null;
 
 module.exports = {
-  // Generate a temporary email address
   generateTempMail: async (args, senderId, sendMessage) => {
     try {
       const response = await axios.get('https://c-v1.onrender.com/tempmail/gen');
@@ -21,9 +20,8 @@ module.exports = {
     }
   },
 
-  // Check the temporary email inbox for a specific email
   checkTempInbox: async (args, senderId, sendMessage) => {
-    const emailToCheck = args[0] || tempEmail; // Use the passed email or the generated one
+    const emailToCheck = args[0] || tempEmail;
     
     if (!emailToCheck) {
       return sendMessage(senderId, { text: "⚠️ Please generate an email first using `/tempmail gen`." });
