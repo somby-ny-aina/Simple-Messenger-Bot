@@ -1,10 +1,11 @@
 const axios = require('axios');
 const { sendMessage } = require('../utils');
 
-let tempEmail = null;
+let tempEmail = null; // Variable to store the generated temporary email
 
 module.exports = {
-  generateTempMail: async (args, senderId, sendMessage, event) => {
+  // Generate a temporary email address
+  generateTempMail: async (args, senderId, sendMessage) => {
     try {
       const response = await axios.get('https://c-v1.onrender.com/tempmail/gen');
       
@@ -20,19 +21,25 @@ module.exports = {
     }
   },
 
-  checkTempInbox: async (args, senderId, sendMessage, event) => {
-    if (!tempEmail) {
+  // Check the temporary email inbox for a specific email
+  checkTempInbox: async (args, senderId, sendMessage) => {
+    const emailToCheck = args[0] || tempEmail; // Use the passed email or the generated one
+    
+    if (!emailToCheck) {
       return sendMessage(senderId, { text: "⚠️ Please generate an email first using `/tempmail gen`." });
     }
 
     try {
-      const response = await axios.get(`https://c-v1.onrender.com/tempmail/inbox?email=${encodeURIComponent(tempEmail)}`);
+      const response = await axios.get(`https://c-v1.onrender.com/tempmail/inbox?email=${encodeURIComponent(emailToCheck)}`);
       
-      if (response.data && response.data.inbox && response.data.inbox.length > 0) {
-        const inboxMessages = response.data.inbox.map((mail, index) => `📩 ${index + 1}. From: ${mail.sender}\nSubject: ${mail.subject}\n\nMessage:\n${mail.message}`).join('\n\n\n');
-        return sendMessage(senderId, { text: `📬 Inbox for ${tempEmail}:\n${inboxMessages}` });
+      if (response.data && response.data.length > 0) {
+        const inboxMessages = response.data.map((mail, index) => 
+          `─────────────────────\n📩 ${index + 1}. From: ${mail.sender}\nSubject: ${mail.subject}\n\nMessage:\n${mail.message}\n─────────────────────`
+        ).join('\n\n\n');
+
+        return sendMessage(senderId, { text: `📬 Inbox for ${emailToCheck}:\n${inboxMessages}` });
       } else {
-        return sendMessage(senderId, { text: `📭 Inbox for ${tempEmail} is empty.` });
+        return sendMessage(senderId, { text: `📭 Inbox for ${emailToCheck} is empty.` });
       }
     } catch (error) {
       console.error("Error checking inbox:", error);
