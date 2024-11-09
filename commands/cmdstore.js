@@ -14,7 +14,7 @@ module.exports = {
 
       if (matchingCommands.length > 0) {
         const commandDetails = matchingCommands.map(cmd =>
-          `🆔 ID: ${cmd.id}\n📜 Command: ${cmd.cmdName}\n🔗 Code Link: ${cmd.codeLink}\nℹ️ Description: ${cmd.description}\n🔢 Number: ${cmd.number}`
+          `𝗜𝗗: ${cmd.id}\n𝗡𝗮𝗺𝗲: ${cmd.cmdName}\n𝗟𝗶𝗻𝗸: ${cmd.codeLink}\n𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻: ${cmd.description}\n`
         ).join('\n\n');
 
         await sendMessage(senderId, { text: `🔍 Results for "${cmdName}":\n\n${commandDetails}` });
