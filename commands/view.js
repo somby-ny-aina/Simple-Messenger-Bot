@@ -5,7 +5,7 @@ module.exports = {
     try {
       // Ensure this is a reply to a message with a photo attachment
       if (
-        event.type !== "message_reply" ||
+        !event.message ||
         !event.message.reply_to ||
         !event.message.reply_to.attachments ||
         !event.message.reply_to.attachments[0] ||
