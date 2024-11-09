@@ -154,8 +154,8 @@ const getAnswer = async (text, senderId, repliedTo) => {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /generate." }, PAGE_ACCESS_TOKEN);
     }
     return generateImage(prompt, senderId);
-  } else if (text.startsWith('/bing ')) {
-    const prompt = text.substring(6).trim();
+  } else if (text.startsWith('/bing')) {
+    const prompt = text.substring(5).trim();
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /bing." }, PAGE_ACCESS_TOKEN);
     }
