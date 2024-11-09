@@ -1,47 +1,26 @@
 const axios = require('axios');
-const { sendMessage } = require('../utils');
-
-let tempEmail = null;
 
 module.exports = {
-  generateTempMail: async (args, senderId, sendMessage) => {
-    try {
-      const response = await axios.get('https://c-v1.onrender.com/tempmail/gen');
-      
-      if (response.data && response.data.email) {
-        tempEmail = response.data.email;
-        return sendMessage(senderId, { text: `📧 Temp Email Generated: ${tempEmail}` });
-      } else {
-        return sendMessage(senderId, { text: "❌ Failed to generate temp email." });
-      }
-    } catch (error) {
-      console.error("Error generating temp email:", error);
-      return sendMessage(senderId, { text: "❌ Error generating temp email." });
-    }
-  },
+  execute: async (args, senderId, sendMessage) => {
+    if (!args[0]) return sendMessage(senderId, { text: "❌ Please provide a prompt after /tempmail check." });
 
-  checkTempInbox: async (args, senderId, sendMessage) => {
-    const emailToCheck = args[0] || tempEmail;
-    
-    if (!emailToCheck) {
-      return sendMessage(senderId, { text: "⚠️ Please generate an email first using `/tempmail gen`." });
-    }
+    const emailToCheck = args[0]; // Use the email passed in the args
 
     try {
-      const response = await axios.get(`https://c-v1.onrender.com/tempmail/inbox?email=${encodeURIComponent(emailToCheck)}`);
+      const response = await axios.get(`https://c-v1.onrender.com/tempmail/inbox`, { params: { email: emailToCheck } });
       
       if (response.data && response.data.length > 0) {
-        const inboxMessages = response.data.map((mail, index) => 
+        const inboxMessages = response.data.map((mail, index) =>
           `─────────────────────\n📩 ${index + 1}. From: ${mail.sender}\nSubject: ${mail.subject}\n\nMessage:\n${mail.message}\n─────────────────────`
         ).join('\n\n\n');
-
-        return sendMessage(senderId, { text: `📬 Inbox for ${emailToCheck}:\n${inboxMessages}` });
+        
+        await sendMessage(senderId, { text: `📬 Inbox for ${emailToCheck}:\n${inboxMessages}` });
       } else {
-        return sendMessage(senderId, { text: `📭 Inbox for ${emailToCheck} is empty.` });
+        await sendMessage(senderId, { text: `📭 Inbox for ${emailToCheck} is empty.` });
       }
     } catch (error) {
-      console.error("Error checking inbox:", error);
-      return sendMessage(senderId, { text: "❌ Error checking inbox." });
+      console.error("Error checking inbox:", error.message);
+      await sendMessage(senderId, { text: "❌ Error checking inbox." });
     }
   }
 };
