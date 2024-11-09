@@ -3,17 +3,20 @@ const axios = require('axios');
 module.exports = {
   execute: async (args, senderId, sendMessage, event) => {
     try {
-      // Ensure this is a reply to a message with a photo attachment
-      if (
-        !event.message ||
-        !event.message.reply_to ||
-        !event.message.reply_to.attachments ||
-        !event.message.reply_to.attachments[0] ||
-        event.message.reply_to.attachments[0].type !== "photo"
-      ) {
+      // Log the entire event object for debugging
+      console.log("Event received:", JSON.stringify(event, null, 2));
+
+      // Ensure the event object has the expected structure
+      if (!event || !event.message || !event.message.reply_to || !event.message.reply_to.attachments || !event.message.reply_to.attachments[0]) {
         return sendMessage(senderId, { text: "❌ Please reply to a photo with this command." });
       }
 
+      // Ensure that the reply is a photo
+      if (event.message.reply_to.attachments[0].type !== "photo") {
+        return sendMessage(senderId, { text: "❌ The reply must be a photo." });
+      }
+
+      // Get the image URL and the prompt for the description
       const imageUrl = event.message.reply_to.attachments[0].url;
       const prompt = args || "Describe this image";
 
