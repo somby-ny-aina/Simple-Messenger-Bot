@@ -3,7 +3,14 @@ const axios = require('axios');
 module.exports = {
   execute: async (args, senderId, sendMessage, event) => {
     try {
-      if (event.message.reply_to && event.message.reply_to.attachments && event.message.reply_to.attachments[0].type === 'image') {
+      if (
+        event &&
+        event.message &&
+        event.message.reply_to &&
+        event.message.reply_to.attachments &&
+        event.message.reply_to.attachments[0] &&
+        event.message.reply_to.attachments[0].type === 'image'
+      ) {
         const imageUrl = event.message.reply_to.attachments[0].payload.url;
         const prompt = args || "Describe this image";
 
