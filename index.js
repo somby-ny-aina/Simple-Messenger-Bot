@@ -57,7 +57,7 @@ const describeImage = async (imageUrl, senderId) => {
     const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
       params: { url: imageUrl }
     });
-    const description = response.data.result;
+    const description = response.data.answer;
     await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
   } catch (error) {
     console.error("Image description error:", error.message);
@@ -65,7 +65,6 @@ const describeImage = async (imageUrl, senderId) => {
   }
 };
 
-// Handle text messages
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
