@@ -2,18 +2,16 @@ const axios = require("axios");
 
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
-    // Check sender ID authorization
+    // Replace with your ID
     if (senderId !== '6881956545251284') {
       return sendMessage(senderId, { text: "❌ You are not authorized to perform this action." });
     }
 
-    // Extract GitHub filename and content from prompt
     const [filename, fileContent] = prompt.split('|').map(item => item.trim());
     if (!filename || !fileContent) {
       return sendMessage(senderId, { text: "❌ Please provide both the filename and file content in the format: /git filename | file_content." });
     }
 
-    // GitHub API details
     const githubToken = process.env.GITHUB_TOKEN;
     const repoOwner = "somby-ny-aina";    // Replace with your GitHub username
     const repoName = "Simple-Messenger-Bot";   // Replace with your GitHub repository name
