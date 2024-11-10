@@ -56,8 +56,7 @@ module.exports = {
         },
       });
 
-      if (response.data &&
-Fa response.data.content) {
+      if (response.data && response.data.content) {
         await sendMessage(senderId, { text: `✅ Successfully ${sha ? "updated" : "added"} file: ${filename} in the /commands/ directory.` });
       } else {
         sendMessage(senderId, { text: "❌ Failed to update or add the file to the repository." });
