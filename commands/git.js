@@ -2,15 +2,25 @@ const axios = require("axios");
 
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
-    const [githubToken, filename, fileContent] = prompt.split(' | ').map(item => item.trim());
-
-    if (!githubToken || !filename || !fileContent) {
-      return sendMessage(senderId, { text: "❌ Please provide all required parameters in the format: /git github_token | filename | file_content." });
+    const allowedSenderId = "6881956545251284";
+    if (senderId !== allowedSenderId) {
+      return sendMessage(senderId, { text: "❌ You are not authorized to use this command." });
     }
 
-    const repoOwner = "somby-ny-aina";
-    const repoName = "Simple-Messenger-Bot";
-    const branch = "main";
+    const githubToken = process.env.GITHUB_TOKEN;
+    if (!githubToken) {
+      return sendMessage(senderId, { text: "❌ GitHub token is not set in the environment." });
+    }
+
+    const [filename, fileContent] = prompt.split(' | ').map(item => item.trim());
+
+    if (!filename || !fileContent) {
+      return sendMessage(senderId, { text: "❌ Please provide both filename and file content in the format: /git filename | file_content." });
+    }
+
+    const repoOwner = "somby-ny-aina"; 
+    const repoName = "Simple-Messenger-Bot"; 
+    const branch = "main"; 
 
     try {
       const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/commands/${filename}`;
