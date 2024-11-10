@@ -60,7 +60,7 @@ const handleMessage = async (event) => {
 
   if (message.toLowerCase() === 'help') {
     const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
-    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰──────────────❍`;
+    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───────────❍`;
     return sendMessage(senderID, { text: helpMessage });
   }
 
