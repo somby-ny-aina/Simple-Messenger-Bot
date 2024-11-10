@@ -29,7 +29,7 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
     commands[commandName] = require(`./commands/${file}`);
   }
 });
-const commandCount = Object.keys(commands).length; // Total number of commands
+const commandCount = Object.keys(commands).length;
 
 const chatGpt4o = async (text, senderId) => {
   try {
@@ -74,7 +74,7 @@ const handleMessage = async (event) => {
 
   if (message.toLowerCase() === 'help') {
     const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
-    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰──〘${commandCount} 〙─❍`;
+    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───〘${commandCount} 〙───❍`;
     return sendMessage(senderID, { text: helpMessage });
   }
 
