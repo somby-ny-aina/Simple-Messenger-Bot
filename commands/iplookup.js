@@ -18,31 +18,28 @@ module.exports = {
       if (data && data.ip) {
         const { ip, continent_name, country_name, city, state_prov, country_emoji, latitude, longitude, isp, timezone, currency, country_flag } = data;
 
-        // Check if latitude and longitude exist for map URL
         if (!latitude || !longitude) {
           return sendMessage(senderId, { text: "❌ Unable to generate map due to missing location data." });
         }
 
-        // Ensure proper formatting of latitude and longitude for map
         const mapImageUrl = `https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${longitude},${latitude}&size=600,400&z=12&l=map&pt=${longitude},${latitude},comma`;
 
-        // Safeguard for timezone and currency objects
         const timezoneName = timezone ? timezone.name : "Unknown";
         const currencyName = currency ? currency.name : "Unknown";
         const currencySymbol = currency ? currency.symbol : "";
 
         const message = `
           🌍 **IP LOOKUP RESULTS** 🌍
-          ➤ **IP Address**: ${ip}
-          ➤ **Continent**: ${continent_name}
-          ➤ **Country**: ${country_name} ${country_emoji}
-          ➤ **City**: ${city}
-          ➤ **State/Province**: ${state_prov}
-          ➤ **ISP**: ${isp}
-          ➤ **Timezone**: ${timezoneName}
-          ➤ **Currency**: ${currencyName} (${currencySymbol})
-
-          📍 **Location on Map**:
+          ➤ IP Address: ${ip}
+          ➤ Continent: ${continent_name}
+          ➤ Country: ${country_name} ${country_emoji}
+          ➤ City: ${city}
+          ➤ State/Province: ${state_prov}
+          ➤ ISP: ${isp}
+          ➤ Timezone: ${timezoneName}
+          ➤ Currency: ${currencyName} (${currencySymbol})
+          ➤ Longitude: ${longitude}
+          ➤ Latitude: ${latitude}
         `;
 
         await sendMessage(senderId, { text: message });
