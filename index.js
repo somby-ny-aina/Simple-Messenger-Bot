@@ -29,6 +29,7 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
     commands[commandName] = require(`./commands/${file}`);
   }
 });
+const commandCount = Object.keys(commands).length; // Total number of commands
 
 const chatGpt4o = async (text, senderId) => {
   try {
@@ -42,7 +43,6 @@ const chatGpt4o = async (text, senderId) => {
   }
 };
 
-// Function to handle commands and pass `event` to commands
 const handleCommand = async (commandName, args, senderId, event) => {
   const command = commands[commandName];
   if (command) {
@@ -52,6 +52,20 @@ const handleCommand = async (commandName, args, senderId, event) => {
   }
 };
 
+const describeImage = async (imageUrl, senderId) => {
+  try {
+    const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
+      params: { url: imageUrl }
+    });
+    const description = response.data.result;
+    await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
+  } catch (error) {
+    console.error("Image description error:", error.message);
+    await sendMessage(senderId, { text: "❌ Error describing image." });
+  }
+};
+
+// Handle text messages
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
@@ -60,22 +74,36 @@ const handleMessage = async (event) => {
 
   if (message.toLowerCase() === 'help') {
     const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
-    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───────────❍`;
+    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰─────〘${commandCount} 〙────❍`;
     return sendMessage(senderID, { text: helpMessage });
   }
 
   if (message.startsWith('/')) {
     const [cmd, ...args] = message.slice(1).split(' ');
-    return handleCommand(cmd, args, senderID, event); // Pass event here
+    return handleCommand(cmd, args, senderID, event);
   } else {
     const botResponse = await chatGpt4o(message, senderID);
     return sendMessage(senderID, { text: botResponse });
   }
 };
 
+const handleImage = async (event) => {
+  const senderID = event.sender.id;
+  const attachments = event.message.attachments;
+  
+  if (attachments && attachments[0].type === "image") {
+    const imageUrl = attachments[0].payload.url;
+    await describeImage(imageUrl, senderID);
+  }
+};
+
 const handleEvent = async (event) => {
-  if (event.message && event.message.text) {
-    await handleMessage(event);
+  if (event.message) {
+    if (event.message.text) {
+      await handleMessage(event);
+    } else if (event.message.attachments && event.message.attachments[0].type === "image") {
+      await handleImage(event);
+    }
   }
 };
 
