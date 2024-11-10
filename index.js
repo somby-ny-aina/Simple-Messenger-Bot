@@ -33,7 +33,7 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
 const chatGpt4o = async (text, senderId) => {
   try {
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: { q: text, uid: senderId }
+      params: { q: encodeURIComponent(text), uid: senderId }
     });
     return response.data.result;
   } catch (err) {
