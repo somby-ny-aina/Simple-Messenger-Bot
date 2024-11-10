@@ -29,7 +29,9 @@ module.exports = {
         const currencySymbol = currency ? currency.symbol : "";
 
         const message = `
-          🌍 **IP LOOKUP RESULTS** 🌍
+          🌍 IP LOOKUP RESULTS 🌍
+
+          
           ➤ IP Address: ${ip}
           ➤ Continent: ${continent_name}
           ➤ Country: ${country_name} ${country_emoji}
