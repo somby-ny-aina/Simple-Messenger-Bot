@@ -1,13 +1,10 @@
 const axios = require('axios');
 
-let awaitingImage = {}; 
+let awaitingImage = {}; // To track users awaiting an image reply
 
 module.exports = {
   execute: async (prompt, senderId, sendMessage, event) => {
-    if (!prompt || prompt !== 'describe') {
-      return sendMessage(senderId, { text: "❌ Invalid command. Use /describe to start." });
-    }
-
+    // Ask the user to send an image by replying to the bot's message
     awaitingImage[senderId] = true;
     return sendMessage(senderId, { text: "🤖 Please reply to this message with an image for description." });
   },
@@ -17,6 +14,7 @@ module.exports = {
       const imageUrl = message.attachments[0].payload.url;
 
       try {
+        // Make the API request to get the description for the image
         const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2?prompt=hi&url=${encodeURIComponent(imageUrl)}`);
 
         if (response.data && response.data.result) {
@@ -29,9 +27,10 @@ module.exports = {
         await sendMessage(senderId, { text: "❌ Error generating description." });
       }
 
+      // Stop awaiting for an image from this user after the description is provided
       delete awaitingImage[senderId];
     } else if (awaitingImage[senderId]) {
-      
+      // If user didn't reply with an image
       await sendMessage(senderId, { text: "❌ Please reply with an image for description." });
     }
   }
