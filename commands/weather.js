@@ -21,14 +21,15 @@ module.exports = {
 
         const weatherMessage = `
 Weather in ${data.name}, ${sysInfo.country}:
-- Condition: ${weatherInfo.description}
-- Temperature: ${mainInfo.temp}°C (Feels like ${mainInfo.feels_like}°C)
-- Humidity: ${mainInfo.humidity}%
-- Pressure: ${mainInfo.pressure} hPa
-- Wind: ${windInfo.speed} m/s, Gusts: ${windInfo.gust} m/s
-- Visibility: ${data.visibility} meters
-- Sunrise: ${new Date(sysInfo.sunrise * 1000).toLocaleTimeString()}
-- Sunset: ${new Date(sysInfo.sunset * 1000).toLocaleTimeString()}
+
+- 𝗖𝗼𝗻𝗱𝗶𝘁𝗶𝗼𝗻: ${weatherInfo.description}
+- 𝗧𝗲𝗺𝗽𝗲𝗿𝗮𝘁𝘂𝗿𝗲: ${mainInfo.temp}°C (Feels like ${mainInfo.feels_like}°C)
+- 𝗛𝘂𝗺𝗶𝗱𝗶𝘁𝘆: ${mainInfo.humidity}%
+- 𝗣𝗿𝗲𝘀𝘀𝘂𝗿𝗲: ${mainInfo.pressure} hPa
+- 𝗪𝗶𝗻𝗳: ${windInfo.speed} m/s, Gusts: ${windInfo.gust} m/s
+- 𝗩𝗶𝘀𝗶𝗯𝗶𝗹𝗶𝘁𝘆: ${data.visibility} meters
+- 𝗦𝘂𝗻𝗿𝗶𝘀𝗲: ${new Date(sysInfo.sunrise * 1000).toLocaleTimeString()}
+- 𝗦𝘂𝗻𝘀𝗲𝘁: ${new Date(sysInfo.sunset * 1000).toLocaleTimeString()}
         `;
 
         await sendMessage(senderId, { text: weatherMessage });
