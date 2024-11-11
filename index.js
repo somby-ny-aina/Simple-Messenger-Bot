@@ -33,8 +33,8 @@ const commandCount = Object.keys(commands).length;
 
 const chatGpt4o = async (text, senderId) => {
   try {
-    const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: { q: encodeURIComponent(text), uid: senderId }
+    const response = await axios.get(`https://jerome-web.onrender.com/service/api/gpt4o-chat`, {
+      params: { message: encodeURIComponent(text) }
     });
     return response.data.result;
   } catch (err) {
