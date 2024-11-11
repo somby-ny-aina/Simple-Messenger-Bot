@@ -16,7 +16,6 @@ module.exports = {
       if (data.status === "success" && data.data.status === "completed") {
         const imageUrl = data.data.images[0];
         await sendMessage(senderId, {
-          text: "Here is the generated image:",
           attachment: { type: "image", payload: { url: imageUrl, is_reusable: true } }
         });
       } else {
