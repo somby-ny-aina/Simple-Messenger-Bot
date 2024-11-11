@@ -36,7 +36,7 @@ const chatGpt4o = async (text, senderId) => {
     const response = await axios.get(`https://jerome-web.onrender.com/service/api/gpt4o-chat`, {
       params: { message: encodeURIComponent(text) }
     });
-    return response.data.result;
+    return response.data.response;
   } catch (err) {
     console.error("GPT-4O error:", err);
     return "❌ An error has occurred.";
