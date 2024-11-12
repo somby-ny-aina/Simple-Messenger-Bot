@@ -14,11 +14,16 @@ module.exports = {
       const data = response.data;
 
       if (data.status === "success" && data.data.status === "completed") {
-        const imageUr = data.data.images[0];
-        let imageUrl = imageUr.replace(".webp", ".jpg");
+        const webpUrl = data.data.images[0];
+        
+        const conversionResponse = await axios.get(`https://ezgif.com/webp-to-jpg?url=${webpUrl}`, {
+          responseType: "arraybuffer"
+        });
+
+        const jpgUrl = conversionResponse.data.result_url;
 
         await sendMessage(senderId, {
-          attachment: { type: "image", payload: { url: imageUrl, is_reusable: true } }
+          attachment: { type: "image", payload: { url: jpgUrl, is_reusable: true } }
         });
       } else {
         sendMessage(senderId, { text: "❌ Failed to generate image." });
