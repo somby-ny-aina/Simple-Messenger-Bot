@@ -14,7 +14,9 @@ module.exports = {
       const data = response.data;
 
       if (data.status === "success" && data.data.status === "completed") {
-        const imageUrl = data.data.images[0];
+        const imageUr = data.data.images[0];
+        let imageUrl = imageUr.replace(".webp", ".jpg");
+
         await sendMessage(senderId, {
           attachment: { type: "image", payload: { url: imageUrl, is_reusable: true } }
         });
