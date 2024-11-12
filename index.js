@@ -52,10 +52,12 @@ const handleCommand = async (commandName, args, senderId, event) => {
   }
 };
 
-const describeImage = async (imageUrl, senderId) => {
+let pendingImageDescriptions = {}; // Store image URLs temporarily by senderId
+
+const describeImage = async (imageUrl, prompt, senderId) => {
   try {
     const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-      params: { url: imageUrl }
+      params: { url: imageUrl, prompt: prompt }
     });
     const description = response.data.answer;
     await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
@@ -70,6 +72,12 @@ const handleMessage = async (event) => {
   const message = event.message.text;
 
   if (!senderID || !message) return;
+
+  if (pendingImageDescriptions[senderID]) {
+    const imageUrl = pendingImageDescriptions[senderID];
+    delete pendingImageDescriptions[senderID];
+    return describeImage(imageUrl, message, senderID);
+  }
 
   if (message.toLowerCase() === 'help') {
     const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
@@ -89,10 +97,11 @@ const handleMessage = async (event) => {
 const handleImage = async (event) => {
   const senderID = event.sender.id;
   const attachments = event.message.attachments;
-  
+
   if (attachments && attachments[0].type === "image") {
     const imageUrl = attachments[0].payload.url;
-    await describeImage(imageUrl, senderID);
+    pendingImageDescriptions[senderID] = imageUrl; // Save image URL to wait for the prompt
+    await sendMessage(senderID, { text: "📷 Image received! Now send a text to describe it." });
   }
 };
 
