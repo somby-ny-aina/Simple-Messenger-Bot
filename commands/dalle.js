@@ -19,11 +19,7 @@ module.exports = {
         const imageUrl = data.data.images[0];
 
         try {
-          const imgResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
-          
-          const imgPath = path.join(__dirname, "cache", "output.jpg");
-          
-          await fs.outputFile(imgPath, imgResponse.data);
+          const imgPath = `https://genosite-8sk2.onrender.com/convert-webp-to-jpg?imageUrl=${imageUrl}`;
           
           await sendMessage(senderId, {
             attachment: { type: "image", payload: { url: imgPath, is_reusable: true } }
