@@ -25,10 +25,9 @@ module.exports = {
             attachment: { type: "image", payload: { url: imgPath, is_reusable: true } }
           });
           
-          fs.unlinkSync(imgPath);
         } catch (error) {
-          console.error("Error saving image:", error.message);
-          sendMessage(senderId, { text: "❌ Error saving image." });
+          console.error("Error:", error.message);
+          sendMessage(senderId, { text: "❌ Error." });
         }
       } else {
         sendMessage(senderId, { text: "❌ Failed to generate image." });
