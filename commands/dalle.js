@@ -1,4 +1,6 @@
 const axios = require("axios");
+const sharp = require("sharp");
+const fs = require("fs");
 
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
@@ -15,13 +17,20 @@ module.exports = {
 
       if (data.status === "success" && data.data.status === "completed") {
         const imageUr = data.data.images[0];
-        let imageUrl = imageUr.replace(".webp", ".jpg");
+
+        const imageResponse = await axios.get(imageUr, { responseType: "arraybuffer" });
+        const imageBuffer = Buffer.from(imageResponse.data, "binary");
+
+        const jpgBuffer = await sharp(imageBuffer).toFormat("jpg").toBuffer();
+
+        const tempFilePath = "./temp_image.jpg";
+        fs.writeFileSync(tempFilePath, jpgBuffer);
 
         await sendMessage(senderId, {
-          attachment: { type: "image", payload: { url: imageUrl, is_reusable: true } }
+          attachment: { type: "image", payload: { url: tempFilePath, is_reusable: true } }
         });
-        sendMessage(senderId, { text: `Image url: ${imageUrl}` });
-   
+
+        fs.unlinkSync(tempFilePath);
       } else {
         sendMessage(senderId, { text: "❌ Failed to generate image." });
       }
