@@ -2,6 +2,8 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
+const description = `/dalle <prompt>
+Example: /dalle cut cat`;
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
