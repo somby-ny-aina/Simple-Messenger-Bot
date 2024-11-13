@@ -1,5 +1,8 @@
 const axios = require("axios");
 
+const description = `/ttvid <prompt>
+Example: /ttvid Ken Moves`;
+
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
