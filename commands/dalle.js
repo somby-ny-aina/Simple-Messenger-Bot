@@ -1,6 +1,6 @@
 const axios = require("axios");
-const sharp = require("sharp");
-const fs = require("fs");
+const fs = require("fs-extra");
+const path = require("path");
 
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
@@ -16,21 +16,24 @@ module.exports = {
       const data = response.data;
 
       if (data.status === "success" && data.data.status === "completed") {
-        const imageUr = data.data.images[0];
+        const imageUrl = data.data.images[0];
 
-        const imageResponse = await axios.get(imageUr, { responseType: "arraybuffer" });
-        const imageBuffer = Buffer.from(imageResponse.data, "binary");
-
-        const jpgBuffer = await sharp(imageBuffer).toFormat("jpg").toBuffer();
-
-        const tempFilePath = "./temp_image.jpg";
-        fs.writeFileSync(tempFilePath, jpgBuffer);
-
-        await sendMessage(senderId, {
-          attachment: { type: "image", payload: { url: tempFilePath, is_reusable: true } }
-        });
-
-        fs.unlinkSync(tempFilePath);
+        try {
+          const imgResponse = await axios.get(imageUrl, { responseType: "arraybuffer" });
+          
+          const imgPath = path.join(__dirname, "cache", "output.jpg");
+          
+          await fs.outputFile(imgPath, imgResponse.data);
+          
+          await sendMessage(senderId, {
+            attachment: { type: "image", payload: { url: imgPath, is_reusable: true } }
+          });
+          
+          fs.unlinkSync(imgPath);
+        } catch (error) {
+          console.error("Error saving image:", error.message);
+          sendMessage(senderId, { text: "❌ Error saving image." });
+        }
       } else {
         sendMessage(senderId, { text: "❌ Failed to generate image." });
       }
