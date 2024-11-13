@@ -1,5 +1,8 @@
 const axios = require("axios");
 
+const description = `/iplookup <ip>
+Example: /ip 127.0.0.6`;
+
 module.exports = {
   execute: async (ipAddress, senderId, sendMessage) => {
     if (!ipAddress) {
