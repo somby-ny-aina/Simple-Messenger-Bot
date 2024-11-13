@@ -1,3 +1,6 @@
+const description = `No prompt.
+Just send /myid`;
+
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
     if (prompt) {
