@@ -1,5 +1,9 @@
 const axios = require("axios");
 
+const description = `/ffinfo <prompt>
+Example: /ffinfo Kelly`;
+
+
 module.exports = {
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
