@@ -52,7 +52,7 @@ const handleCommand = async (commandName, args, senderId, event) => {
   }
 };
 
-let pendingImageDescriptions = {}; // Store image URLs temporarily by senderId
+let pendingImageDescriptions = {};
 
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
@@ -79,10 +79,21 @@ const handleMessage = async (event) => {
     return describeImage(imageUrl, message, senderID);
   }
 
-  if (message.toLowerCase() === 'help') {
-    const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
-    const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───〘${commandCount} 〙───❍`;
-    return sendMessage(senderID, { text: helpMessage });
+  if (message.toLowerCase().startsWith('help')) {
+    const args = message.split(' ');
+    if (args.length > 1) {
+      const commandName = args[1];
+      const command = commands[commandName];
+      if (command && command.description) {
+        return sendMessage(senderID, { text: `📄 Description for /${commandName}: ${command.description}` });
+      } else {
+        return sendMessage(senderID, { text: `❌ No description found for /${commandName}.` });
+      }
+    } else {
+      const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
+      const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───〘${commandCount} 〙───❍`;
+      return sendMessage(senderID, { text: helpMessage });
+    }
   }
 
   if (message.startsWith('/')) {
