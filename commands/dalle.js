@@ -4,7 +4,8 @@ const path = require("path");
 
 const description = `/dalle <prompt>
 Example: /dalle cut cat`;
-module.exports = {
+
+module.exports = { description, 
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a prompt after /bing." });
