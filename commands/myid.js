@@ -1,7 +1,7 @@
-const description = `No prompt.
+const description = `No prompt required.
 Just send /myid`;
 
-module.exports = {
+module.exports = { description, 
   execute: async (prompt, senderId, sendMessage) => {
     if (prompt) {
       return sendMessage(senderId, { text: "❌ This command does not require any additional input." });
