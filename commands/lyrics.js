@@ -3,7 +3,7 @@ const axios = require("axios");
 const description = `/lyrics <prompt>
 Example: /lyrics Alan Walker - Play`;
 
-module.exports = {
+module.exports = { description, 
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) return sendMessage(senderId, { text: "❌ Please provide a prompt after /lyrics." });
 
