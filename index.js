@@ -31,12 +31,22 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
 });
 const commandCount = Object.keys(commands).length;
 
+const prePrompt = "You are Smo, a helpful assistant that provides informative answers. You never use Latex math formating but use normal text.";
+
 const chatGpt4o = async (text, senderId) => {
   try {
+    const context = senderContexts[senderId] || ''; // Retrieve existing context if any
+    const fullPrompt = prePrompt + "\n" + context + "\nUser: " + text + "\nAssistant:";
+    
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: { q: encodeURIComponent(text), uid: senderId }
+      params: { q: encodeURIComponent(fullPrompt), uid: senderId }
     });
-    return response.data.result;
+    
+    const botResponse = response.data.result;
+
+    senderContexts[senderId] = context + "\nUser: " + text + "\nAssistant: " + botResponse;
+
+    return botResponse;
   } catch (err) {
     console.error("GPT-4O error:", err);
     return "❌ An error has occurred.";
