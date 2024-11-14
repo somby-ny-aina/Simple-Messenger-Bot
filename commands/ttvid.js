@@ -3,7 +3,7 @@ const axios = require("axios");
 const description = `/ttvid <prompt>
 Example: /ttvid Ken Moves`;
 
-module.exports = {
+module.exports = { description, 
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a search query after /lyricv." });
