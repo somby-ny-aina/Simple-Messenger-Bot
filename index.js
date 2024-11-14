@@ -33,26 +33,18 @@ const commandCount = Object.keys(commands).length;
 
 const prePrompt = "You are Smo, a helpful assistant that provides informative answers. You never use Latex math formating but use normal text.";
 
+
 const chatGpt4o = async (text, senderId) => {
   try {
-    const context = senderContexts[senderId] || ''; // Retrieve existing context if any
-    const fullPrompt = prePrompt + "\n" + context + "\nUser: " + text + "\nAssistant:";
-    
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: { q: encodeURIComponent(fullPrompt), uid: senderId }
+      params: { q: `${prePrompt}\n${encodeURIComponent(text)}`, uid: senderId }
     });
-    
-    const botResponse = response.data.result;
-
-    senderContexts[senderId] = context + "\nUser: " + text + "\nAssistant: " + botResponse;
-
-    return botResponse;
+    return response.data.result;
   } catch (err) {
     console.error("GPT-4O error:", err);
     return "❌ An error has occurred.";
   }
 };
-
 const handleCommand = async (commandName, args, senderId, event) => {
   const command = commands[commandName];
   if (command) {
