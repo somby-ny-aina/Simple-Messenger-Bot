@@ -4,7 +4,7 @@ const description = `/ffinfo <prompt>
 Example: /ffinfo Kelly`;
 
 
-module.exports = {
+module.exports = { description, 
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) {
       return sendMessage(senderId, { text: "❌ Please provide a character name after /ffinfo." });
