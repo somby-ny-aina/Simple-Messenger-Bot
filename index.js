@@ -81,13 +81,13 @@ const handleMessage = async (event) => {
     return describeImage(imageUrl, message, senderID);
   }
 
-  if (message.toLowerCase().startsWith('help')) {
+  if (message.toLowerCase().startsWith('cmdlist')) {
     const args = message.split(' ');
     if (args.length > 1) {
       const commandName = args[1];
       const command = commands[commandName];
       if (command && command.description) {
-        return sendMessage(senderID, { text: `📄 Description for /${commandName}: ${command.description}` });
+        return sendMessage(senderID, { text: `📄 Description for /${commandName}: \n${command.description}` });
       } else {
         return sendMessage(senderID, { text: `❌ No description found for /${commandName}.` });
       }
