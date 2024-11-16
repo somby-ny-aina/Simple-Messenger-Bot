@@ -1,6 +1,9 @@
 const axios = require("axios");
+const description = `/wallpaper <prompt> | <page>
+E.g: /wallpaper Free Fire | 1`;
 
-module.exports = {
+
+module.exports = { description,
   execute: async (args, senderId, sendMessage) => {
     const [query, page] = args.split("|").map(arg => arg.trim());
     
