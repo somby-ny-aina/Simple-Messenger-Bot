@@ -33,7 +33,6 @@ const commandCount = Object.keys(commands).length;
 
 const prePrompt = "[ You are Smo ( name from Somby ), a helpful assistant that provides informative answers. You never use Latex math formatting and all other text formatting but use normal text because Messenger doesn't support it. Never use ** ** for bolding texts. Your developer is Somby Ny Aina and he was born on September 2008 in Antsirabe, Madagascar. His facebook link is https://www.facebook.com/100086980630281. He is very smart. ]";
 
-
 const chatGpt4o = async (text, senderId) => {
   try {
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
@@ -45,6 +44,7 @@ const chatGpt4o = async (text, senderId) => {
     return "❌ An error has occurred.";
   }
 };
+
 const handleCommand = async (commandName, args, senderId, event) => {
   const command = commands[commandName];
   if (command) {
@@ -93,7 +93,7 @@ const handleMessage = async (event) => {
       }
     } else {
       const commandList = Object.keys(commands).map(cmd => `┃➠ /${cmd}`).join('\n');
-      const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───〘${commandCount} 〙───❍`;
+      const helpMessage = `╭─〘 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦 〙─❍\n${commandList}\n╰───〘 ${commandCount} 〙───❍`;
       return sendMessage(senderID, { text: helpMessage });
     }
   }
@@ -118,7 +118,15 @@ const handleImage = async (event) => {
   }
 };
 
+const handleGetStarted = async (senderId) => {
+  await sendMessage(senderId, { text: "👋 Welcome! I'm here to assist you. Type 'help' to see what I can do.\n\nAdmin: Somby Ny Aina\nLink: facebook.com/100086980630281" });
+};
+
 const handleEvent = async (event) => {
+  if (event.postback && event.postback.payload === "GET_STARTED_PAYLOAD") {
+    return handleGetStarted(event.sender.id);
+  }
+
   if (event.message) {
     if (event.message.text) {
       await handleMessage(event);
