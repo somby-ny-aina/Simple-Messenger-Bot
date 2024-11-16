@@ -1,8 +1,13 @@
 const axios = require('axios');
+const description = `1) Without prompt to get tempmail:
+/tempmail
+
+2) Without prompt to check inbox:
+/tempmail <tempmail>`;
 
 module.exports = {
   execute: async (prompt, senderId, sendMessage, event) => {
-    console.log('Received args:', prompt); // Debugging log
+    console.log('Received args:', prompt);
 
     if (prompt === 'gen') {
       try {
