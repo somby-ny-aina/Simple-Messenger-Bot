@@ -5,7 +5,7 @@ const description = `1) Without prompt to get tempmail:
 2) Without prompt to check inbox:
 /tempmail <tempmail>`;
 
-module.exports = {
+module.exports = { description,
   execute: async (prompt, senderId, sendMessage, event) => {
     console.log('Received args:', prompt);
 
