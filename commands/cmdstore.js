@@ -1,4 +1,6 @@
 const axios = require("axios");
+const description = `/cmdstore <cmd name>
+E.g: /cmdstore ai`;
 
 module.exports = {
   execute: async (cmdName, senderId, sendMessage) => {
