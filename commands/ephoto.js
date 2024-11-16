@@ -1,6 +1,8 @@
 const axios = require("axios");
+const description = `/ephoto <prompt> | <number>
+E.g: /ephoto Somby | 1`;
 
-module.exports = {
+module.exports = { description,
   execute: async (prompt, senderId, sendMessage) => {
     if (!prompt) return sendMessage(senderId, { text: "❌ Please provide a prompt after /ephoto." });
 
