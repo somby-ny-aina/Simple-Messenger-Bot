@@ -2,7 +2,7 @@ const axios = require("axios");
 const description = `/cmdstore <cmd name>
 E.g: /cmdstore ai`;
 
-module.exports = {
+module.exports = { description,
   execute: async (cmdName, senderId, sendMessage) => {
     if (!cmdName) {
       return sendMessage(senderId, { text: "❌ Please provide a command name after /cmdsearch." });
