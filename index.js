@@ -58,10 +58,10 @@ let pendingImageDescriptions = {};
 
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
-    const response = await axios.get(`https://sandipbaruwal.onrender.com/gemini2`, {
-      params: { url: imageUrl, prompt: prompt }
+    const response = await axios.get(`https://joshweb.click/gemini`, {
+      params: { prompt: prompt, url: imageUrl }
     });
-    const description = response.data.answer;
+    const description = response.data.gemini;
     await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
   } catch (error) {
     console.error("Image description error:", error.message);
