@@ -4,11 +4,11 @@ module.exports = {
   description,
   execute: async (args, senderId, sendMessage) => {
     if (args.length < 2) {
-      return sendMessage(senderId, { text: "❌ Usage: /codegen [language] [query]" });
+      return sendMessage(senderId, { text: "❌ Usage: /codegen [language] | [query]" });
     }
 
     const lang = args[0];
-    const codeQuery = args.slice(1).join(" ");
+    const codeQuery = args.slice(1).join("|");
     const apiUrl = `https://joshweb.click/api/codegpt?type=code&lang=${encodeURIComponent(lang)}&query=${encodeURIComponent(codeQuery)}`;
 
     try {
