@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
+
 const sendMessage = async (senderId, message) => {
   try {
     const PAGE_ACCESS_TOKEN = process.env.token;
@@ -15,22 +16,27 @@ const sendMessage = async (senderId, message) => {
       throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
 
-    await axios.post(
-      `https://graph.facebook.com/v21.0/me/messages`,
-      {
-        recipient: { id: senderId },
-        message: typeof message === 'string' ? { text: message } : message,
-      },
-      {
-        params: { access_token: PAGE_ACCESS_TOKEN },
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const messageText = typeof message === 'string' ? message : message.text;
+    const maxLength = 2000;
+
+    for (let i = 0; i < messageText.length; i += maxLength) {
+      const chunk = messageText.substring(i, i + maxLength);
+      await axios.post(
+        `https://graph.facebook.com/v21.0/me/messages`,
+        {
+          recipient: { id: senderId },
+          message: { text: chunk },
+        },
+        {
+          params: { access_token: PAGE_ACCESS_TOKEN },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
   } catch (error) {
     console.error('Error sending message:', error.response?.data || error.message);
   }
 };
-
 
 const commands = {};
 fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
