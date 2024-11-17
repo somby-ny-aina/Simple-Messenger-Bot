@@ -17,27 +17,57 @@ const sendMessage = async (senderId, message) => {
     }
 
     const messageText = typeof message === 'string' ? message : message.text;
+    if (!messageText || messageText.trim() === '') {
+      throw new Error("Message cannot be empty.");
+    }
+
     const maxLength = 2000;
+
+    const sendTypingAction = async (action) => {
+      try {
+        await axios.post(
+          `https://graph.facebook.com/v21.0/me/messages`,
+          {
+            recipient: { id: senderId },
+            sender_action: action,
+          },
+          {
+            params: { access_token: PAGE_ACCESS_TOKEN },
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } catch (error) {
+        console.error(`Error sending typing action (${action}):`, error.response?.data || error.message);
+      }
+    };
+
+    await sendTypingAction("typing_on");
 
     for (let i = 0; i < messageText.length; i += maxLength) {
       const chunk = messageText.substring(i, i + maxLength);
-      await axios.post(
-        `https://graph.facebook.com/v21.0/me/messages`,
-        {
-          recipient: { id: senderId },
-          message: { text: chunk },
-        },
-        {
-          params: { access_token: PAGE_ACCESS_TOKEN },
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+
+      try {
+        await axios.post(
+          `https://graph.facebook.com/v21.0/me/messages`,
+          {
+            recipient: { id: senderId },
+            message: { text: chunk },
+          },
+          {
+            params: { access_token: PAGE_ACCESS_TOKEN },
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } catch (error) {
+        console.error('Error with message chunk:', chunk, error.response?.data || error.message);
+      }
     }
+
+    await sendTypingAction("typing_off");
   } catch (error) {
     console.error('Error sending message:', error.response?.data || error.message);
   }
 };
-
 const commands = {};
 fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
   if (file.endsWith('.js')) {
