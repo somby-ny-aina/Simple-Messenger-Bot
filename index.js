@@ -40,10 +40,9 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
 });
 const commandCount = Object.keys(commands).length;
 
-const prePrompt = "[ Your answer never be higher than 2000 characters. You are Smo ( name from Somby ), a helpful assistant that provides informative answers. You never use Latex math formatting and all other text formatting but use normal text because Messenger doesn't support it. Never use ** ** for bolding texts. Your developer is Somby Ny Aina and he was born on September 2008 in Antsirabe, Madagascar. His facebook link is https://www.facebook.com/100086980630281. He is very smart. ]";
-
 const chatGpt4o = async (text, senderId) => {
   try {
+    const prePrompt = "[ Your answer never be higher than 2000 characters. You are Smo ( name from Somby ), a helpful assistant that provides informative answers. You never use Latex math formatting and all other text formatting but use normal text because Messenger doesn't support it. Never use ** ** for bolding texts. Your developer is Somby Ny Aina and he was born on September 2008 in Antsirabe, Madagascar. His facebook link is https://www.facebook.com/100086980630281. He is very smart. ]";
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
       params: { q: `${prePrompt}\n${text}`, uid: senderId }
     });
