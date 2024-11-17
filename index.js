@@ -14,16 +14,40 @@ const sendMessage = async (senderId, message) => {
       throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
 
-    if (typeof message === "string" && message.length > 2000) {
+    if (typeof message === "string") {
       const maxLength = 2000;
-      const parts = message.match(new RegExp(`.{1,${maxLength}}`, "g")); // Split into 2000-char chunks
 
-      for (const part of parts) {
+      // Ensure the message is valid UTF-8
+      const utf8Message = Buffer.from(message, "utf-8").toString();
+
+      if (utf8Message.length > maxLength) {
+        // Split the message into chunks of 2000 characters
+        const parts = utf8Message.match(new RegExp(`.{1,${maxLength}}`, "g")) || [];
+
+        if (parts.length === 0) {
+          throw new Error("Message splitting resulted in an empty array.");
+        }
+
+        for (const part of parts) {
+          await axios.post(
+            `https://graph.facebook.com/v21.0/me/messages`,
+            {
+              recipient: { id: senderId },
+              message: { text: part },
+            },
+            {
+              params: { access_token: PAGE_ACCESS_TOKEN },
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        }
+      } else {
+        // Send a single message if it's within the character limit
         await axios.post(
           `https://graph.facebook.com/v21.0/me/messages`,
           {
             recipient: { id: senderId },
-            message: { text: part },
+            message: { text: utf8Message },
           },
           {
             params: { access_token: PAGE_ACCESS_TOKEN },
@@ -32,11 +56,12 @@ const sendMessage = async (senderId, message) => {
         );
       }
     } else {
+      // For non-string messages, send directly
       await axios.post(
         `https://graph.facebook.com/v21.0/me/messages`,
         {
           recipient: { id: senderId },
-          message: typeof message === "string" ? { text: message } : message,
+          message,
         },
         {
           params: { access_token: PAGE_ACCESS_TOKEN },
