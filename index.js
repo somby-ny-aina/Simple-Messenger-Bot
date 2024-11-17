@@ -10,58 +10,21 @@ const PAGE_ACCESS_TOKEN = process.env.token;
 
 const sendMessage = async (senderId, message) => {
   try {
+    const PAGE_ACCESS_TOKEN = process.env.token;
     if (!PAGE_ACCESS_TOKEN) {
       throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
 
-    if (typeof message === "string") {
-      const maxLength = 2000;
+    const messageText = typeof message === 'string' ? message : message.text;
+    const maxLength = 2000;
 
-      // Ensure the message is valid UTF-8
-      const utf8Message = Buffer.from(message, "utf-8").toString();
-
-      if (utf8Message.length > maxLength) {
-        // Split the message into chunks of 2000 characters
-        const parts = utf8Message.match(new RegExp(`.{1,${maxLength}}`, "g")) || [];
-
-        if (parts.length === 0) {
-          throw new Error("Message splitting resulted in an empty array.");
-        }
-
-        for (const part of parts) {
-          await axios.post(
-            `https://graph.facebook.com/v21.0/me/messages`,
-            {
-              recipient: { id: senderId },
-              message: { text: part },
-            },
-            {
-              params: { access_token: PAGE_ACCESS_TOKEN },
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        }
-      } else {
-        // Send a single message if it's within the character limit
-        await axios.post(
-          `https://graph.facebook.com/v21.0/me/messages`,
-          {
-            recipient: { id: senderId },
-            message: { text: utf8Message },
-          },
-          {
-            params: { access_token: PAGE_ACCESS_TOKEN },
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      }
-    } else {
-      // For non-string messages, send directly
+    for (let i = 0; i < messageText.length; i += maxLength) {
+      const chunk = messageText.substring(i, i + maxLength);
       await axios.post(
         `https://graph.facebook.com/v21.0/me/messages`,
         {
           recipient: { id: senderId },
-          message,
+          message: { text: chunk },
         },
         {
           params: { access_token: PAGE_ACCESS_TOKEN },
@@ -70,7 +33,7 @@ const sendMessage = async (senderId, message) => {
       );
     }
   } catch (error) {
-    console.error("Error sending message:", error.response?.data || error.message);
+    console.error('Error sending message:', error.response?.data || error.message);
   }
 };
 
