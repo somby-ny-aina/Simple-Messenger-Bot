@@ -10,7 +10,7 @@ const PAGE_ACCESS_TOKEN = process.env.token;
 
 const sendMessage = async (senderId, message) => {
   try {
-    const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+    const PAGE_ACCESS_TOKEN = process.env.token;
     if (!PAGE_ACCESS_TOKEN) {
       throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
