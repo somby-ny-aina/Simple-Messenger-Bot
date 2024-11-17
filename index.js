@@ -14,16 +14,29 @@ const sendMessage = async (senderId, message) => {
       throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
 
-    const messages = typeof message === 'string' 
-      ? message.match(/.{1,2000}/g) 
-      : [message];
+    if (typeof message === "string" && message.length > 2000) {
+      const maxLength = 2000;
+      const parts = message.match(new RegExp(`.{1,${maxLength}}`, "g")); // Split into 2000-char chunks
 
-    for (const msg of messages) {
+      for (const part of parts) {
+        await axios.post(
+          `https://graph.facebook.com/v21.0/me/messages`,
+          {
+            recipient: { id: senderId },
+            message: { text: part },
+          },
+          {
+            params: { access_token: PAGE_ACCESS_TOKEN },
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+    } else {
       await axios.post(
         `https://graph.facebook.com/v21.0/me/messages`,
         {
           recipient: { id: senderId },
-          message: typeof msg === 'string' ? { text: msg } : msg,
+          message: typeof message === "string" ? { text: message } : message,
         },
         {
           params: { access_token: PAGE_ACCESS_TOKEN },
@@ -32,7 +45,7 @@ const sendMessage = async (senderId, message) => {
       );
     }
   } catch (error) {
-    console.error('Error sending message:', error.response?.data || error.message);
+    console.error("Error sending message:", error.response?.data || error.message);
   }
 };
 
