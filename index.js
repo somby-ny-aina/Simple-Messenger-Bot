@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const PAGE_ACCESS_TOKEN = process.env.token:
+const PAGE_ACCESS_TOKEN = process.env.token;
 
 const sendMessage = async (senderId, message) => {
   const PAGE_ACCESS_TOKEN = process.env.token;
