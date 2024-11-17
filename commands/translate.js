@@ -1,3 +1,4 @@
+const axios = require ('axios');
 const description = `Usage: /translate <word|phrase> | <language_code>
 Example: /translate hello | fr
 
