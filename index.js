@@ -8,26 +8,26 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
-const sendmessage = async (senderid, message) => {
+const sendMessage = async (senderId, message) => {
   try {
-    const page_access_token = process.env.token;
-    if (!page_access_token) {
-      throw new error("page_access_token is not set in the environment variables.");
+    const PAGE_ACCESS_TOKEN = process.env.token;
+    if (!PAGE_ACCESS_TOKEN) {
+      throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
 
     await axios.post(
       `https://graph.facebook.com/v21.0/me/messages`,
       {
-        recipient: { id: senderid },
+        recipient: { id: senderId },
         message: typeof message === 'string' ? { text: message } : message,
       },
       {
-        params: { access_token: page_access_token },
-        headers: { "content-type": "application/json" },
+        params: { access_token: PAGE_ACCESS_TOKEN },
+        headers: { "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    console.error('error sending message:', error.response?.data || error.message);
+    console.error('Error sending message:', error.response?.data || error.message);
   }
 };
 
@@ -40,7 +40,7 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
 });
 const commandCount = Object.keys(commands).length;
 
-const prePrompt = "[ Yor answer never be higher than 2000 characters. You are Smo ( name from Somby ), a helpful assistant that provides informative answers. You never use Latex math formatting and all other text formatting but use normal text because Messenger doesn't support it. Never use ** ** for bolding texts. Your developer is Somby Ny Aina and he was born on September 2008 in Antsirabe, Madagascar. His facebook link is https://www.facebook.com/100086980630281. He is very smart. ]";
+const prePrompt = "[ Your answer never be higher than 2000 characters. You are Smo ( name from Somby ), a helpful assistant that provides informative answers. You never use Latex math formatting and all other text formatting but use normal text because Messenger doesn't support it. Never use ** ** for bolding texts. Your developer is Somby Ny Aina and he was born on September 2008 in Antsirabe, Madagascar. His facebook link is https://www.facebook.com/100086980630281. He is very smart. ]";
 
 const chatGpt4o = async (text, senderId) => {
   try {
