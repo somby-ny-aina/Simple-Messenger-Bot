@@ -16,13 +16,6 @@ const sendMessage = async (senderId, message) => {
       throw new Error("PAGE_ACCESS_TOKEN is not set in the environment variables.");
     }
 
-    const messageText = typeof message === 'string' ? message : message.text;
-    if (!messageText || messageText.trim() === '') {
-      throw new Error("Message cannot be empty.");
-    }
-
-    const maxLength = 2000;
-
     const sendTypingAction = async (action) => {
       try {
         await axios.post(
@@ -43,10 +36,15 @@ const sendMessage = async (senderId, message) => {
 
     await sendTypingAction("typing_on");
 
-    for (let i = 0; i < messageText.length; i += maxLength) {
-      const chunk = messageText.substring(i, i + maxLength);
+    if (typeof message === "string" || message.text) {
+      const messageText = typeof message === "string" ? message : message.text;
+      if (!messageText || messageText.trim() === '') {
+        throw new Error("Message cannot be empty.");
+      }
 
-      try {
+      const maxLength = 2000;
+      for (let i = 0; i < messageText.length; i += maxLength) {
+        const chunk = messageText.substring(i, i + maxLength);
         await axios.post(
           `https://graph.facebook.com/v21.0/me/messages`,
           {
@@ -58,9 +56,28 @@ const sendMessage = async (senderId, message) => {
             headers: { "Content-Type": "application/json" },
           }
         );
-      } catch (error) {
-        console.error('Error with message chunk:', chunk, error.response?.data || error.message);
       }
+    } else if (message.attachment && message.attachment.type === "image") {
+      await axios.post(`https://graph.facebook.com/v21.0/me/messages`,
+        {
+          recipient: { id: senderId },
+          message: {
+            attachment: {
+              type: "image",
+              payload: {
+                url: message.attachment.payload.url,
+                is_reusable: true,
+              },
+            },
+          },
+        },
+        {
+          params: { access_token: PAGE_ACCESS_TOKEN },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    } else {
+      throw new Error("Unsupported message format.");
     }
 
     await sendTypingAction("typing_off");
@@ -68,6 +85,7 @@ const sendMessage = async (senderId, message) => {
     console.error('Error sending message:', error.response?.data || error.message);
   }
 };
+
 const commands = {};
 fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
   if (file.endsWith('.js')) {
