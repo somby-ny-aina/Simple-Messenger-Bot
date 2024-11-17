@@ -3,12 +3,17 @@ const description = `Generates code snippets based on a language and query. Usag
 module.exports = {
   description,
   execute: async (args, senderId, sendMessage) => {
-    if (args.length < 2) {
+
+    if (!args.includes('|')) {
       return sendMessage(senderId, { text: "❌ Usage: /codegen [language] | [query]" });
     }
 
-    const lang = args[0];
-    const codeQuery = args.slice(1).join(" ");
+    const [lang, codeQuery] = args.split('|').map(part => part.trim());
+
+    if (!lang || !codeQuery) {
+      return sendMessage(senderId, { text: "❌ Both language and query are required in the format: [language] | [query]" });
+    }
+
     const apiUrl = `https://joshweb.click/api/codegpt?type=code&lang=${encodeURIComponent(lang)}&query=${encodeURIComponent(codeQuery)}`;
 
     try {
