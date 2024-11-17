@@ -45,7 +45,7 @@ const prePrompt = "[ Your answer never be higher than 2000 characters. You are S
 const chatGpt4o = async (text, senderId) => {
   try {
     const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: { q: `${prePrompt}\n${encodeURIComponent(text)}`, uid: senderId }
+      params: { q: `${prePrompt}\n${text}`, uid: senderId }
     });
     return response.data.result;
   } catch (err) {
