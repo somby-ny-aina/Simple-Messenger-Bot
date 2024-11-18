@@ -138,7 +138,10 @@ const execute = async (args, senderId, sendMessage) => {
       return sendMessage(senderId, { text: "❌ Incorrect format. Use: /translate <word|phrase> | <language_code>" });
     }
 
-    const [text, targetLang] = args.split('|').map(part => part.trim());
+    const lastPipeIndex = args.lastIndexOf('|');
+    const text = args.slice(0, lastPipeIndex).trim();
+    const targetLang = args.slice(lastPipeIndex + 1).trim();
+
     if (!text || !targetLang) {
       return sendMessage(senderId, { text: "❌ Please specify both the text to translate and the target language code." });
     }
@@ -153,9 +156,9 @@ const execute = async (args, senderId, sendMessage) => {
       }
     });
 
-    const translatedText = response.data[0]?.[0]?.[0];
+    const translatedText = response.data?.[0]?.[0]?.[0];
     if (translatedText) {
-      return sendMessage(senderId, { text: `🌍 Translation (${targetLang}):\n\n ${translatedText}` });
+      return sendMessage(senderId, { text: `🌍 Translation (${targetLang}):\n\n${translatedText}` });
     } else {
       return sendMessage(senderId, { text: "❌ Could not fetch the translation. Please try again later." });
     }
