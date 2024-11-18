@@ -57,25 +57,32 @@ const sendMessage = async (senderId, message) => {
           }
         );
       }
-    } else if (message.attachment && message.attachment.type === "image") {
-      await axios.post(`https://graph.facebook.com/v21.0/me/messages`,
-        {
-          recipient: { id: senderId },
-          message: {
-            attachment: {
-              type: "image",
-              payload: {
-                url: message.attachment.payload.url,
-                is_reusable: true,
+    } else if (message.attachment) {
+      const { type, payload } = message.attachment;
+
+      if (type === "image" || type === "audio") {
+        await axios.post(
+          `https://graph.facebook.com/v21.0/me/messages`,
+          {
+            recipient: { id: senderId },
+            message: {
+              attachment: {
+                type,
+                payload: {
+                  url: payload.url,
+                  is_reusable: true,
+                },
               },
             },
           },
-        },
-        {
-          params: { access_token: PAGE_ACCESS_TOKEN },
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+          {
+            params: { access_token: PAGE_ACCESS_TOKEN },
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } else {
+        throw new Error("Unsupported attachment type. Only 'image' and 'audio' are supported.");
+      }
     } else {
       throw new Error("Unsupported message format.");
     }
@@ -85,7 +92,6 @@ const sendMessage = async (senderId, message) => {
     console.error('Error sending message:', error.response?.data || error.message);
   }
 };
-
 const commands = {};
 fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
   if (file.endsWith('.js')) {
