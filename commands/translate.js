@@ -156,7 +156,8 @@ const execute = async (args, senderId, sendMessage) => {
       }
     });
 
-    const translatedText = response.data?.[0]?.[0]?.[0];
+    const translatedText = response.data?.[0]?.map((segment) => segment[0]).join(' ');
+
     if (translatedText) {
       return sendMessage(senderId, { text: `🌍 Translation (${targetLang}):\n\n${translatedText}` });
     } else {
