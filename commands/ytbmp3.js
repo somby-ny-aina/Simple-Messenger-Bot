@@ -1,13 +1,13 @@
 const axios = require('axios');
 
-const description = `Search and download MP3 from YouTube. Usage: /ytb [title]`;
+const description = `Search and download MP3 from YouTube. Usage: /ytbmp3 [title]`;
 
 module.exports = {
   description,
   execute: async (args, senderId, sendMessage) => {
     try {
       if (!args || !args.trim()) {
-        return sendMessage(senderId, { text: "❌ Usage: /ytb [title]" });
+        return sendMessage(senderId, { text: "❌ Usage: /ytbmp3 [title]" });
       }
 
       const title = args.trim();
@@ -19,32 +19,22 @@ module.exports = {
         return sendMessage(senderId, { text: "❌ No videos found for your search." });
       }
 
-      const videos = searchResponse.data.videos.slice(0, 6);
-      const videoChoices = videos.map((video, index) => ({
-        text: `${index + 1}. ${video.title}\nDuration: ${video.duration}\nViews: ${video.views}`,
-        videoUrl: video.url,
-      }));
+      const videos = searchResponse.data.videos;
+      if (videos.length === 0) {
+        return sendMessage(senderId, { text: "❌ No videos found for the search query." });
+      }
 
-      let responseText = "🎬 Here are the top 6 search results:\n";
-      videoChoices.forEach((choice) => {
-        responseText += `\n${choice.text}`;
+      const randomIndex = Math.floor(Math.random() * videos.length);
+      const selectedVideo = videos[randomIndex];
+
+      await sendMessage(senderId, {
+        text: `Title: "${selectedVideo.title}"\nDuration: ${selectedVideo.duration}\nViews: ${selectedVideo.views}\n\nDownloading MP3...`,
       });
 
-      await sendMessage(senderId, { text: responseText });
-
-      const waitForReply = (message) => {
-        const userChoice = parseInt(message.text, 10);
-        if (userChoice >= 1 && userChoice <= videoChoices.length) {
-          return downloadMP3(videoChoices[userChoice - 1].videoUrl, senderId);
-        } else {
-          sendMessage(senderId, { text: "❌ Invalid choice. Please choose a number between 1 and 6." });
-        }
-      };
-
-      return waitForReply;
-
+      await downloadMP3(selectedVideo.url, senderId);
+      
     } catch (error) {
-      console.error("Error in /ytb command:", error.message);
+      console.error("Error in /ytbmp3 command:", error.message);
       await sendMessage(senderId, { text: "❌ An error occurred while fetching the videos." });
     }
   },
@@ -62,7 +52,6 @@ async function downloadMP3(videoUrl, senderId) {
     const downloadLink = musicResponse.data.response;
     const title = musicResponse.data.title;
 
-    
     await sendMessage(senderId, {
       text: `🎶 Here's your MP3 download link for "${title}".`,
     });
