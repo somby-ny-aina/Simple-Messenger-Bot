@@ -32,7 +32,6 @@ module.exports = {
 
       await sendMessage(senderId, { text: responseText });
 
-      // Now wait for user's next message to choose a video by number
       const waitForReply = (message) => {
         const userChoice = parseInt(message.text, 10);
         if (userChoice >= 1 && userChoice <= videoChoices.length) {
@@ -63,9 +62,11 @@ async function downloadMP3(videoUrl, senderId) {
     const downloadLink = musicResponse.data.response;
     const title = musicResponse.data.title;
 
+    
     await sendMessage(senderId, {
-      text: `🎶 Here's your MP3 download link for "${title}":\n${downloadLink}\n\nNote: The link will auto-delete after 10 minutes.`,
+      text: `🎶 Here's your MP3 download link for "${title}".`,
     });
+    sendMessage(senderId, { attachment: { type: "audio", payload: { url: downloadLink, is_reusable: true } } });
 
   } catch (error) {
     console.error("Error fetching MP3:", error.message);
