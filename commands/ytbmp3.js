@@ -55,7 +55,7 @@ async function downloadMP3(videoUrl, senderId) {
     await sendMessage(senderId, {
       text: `🎶 Here's your MP3 download link for "${title}".`,
     });
-    sendMessage(senderId, { attachment: { type: "audio", payload: { url: downloadLink, is_reusable: true } } });
+    await sendMessage(senderId, { attachment: { type: "audio", payload: { url: downloadLink, is_reusable: true } } });
 
   } catch (error) {
     console.error("Error fetching MP3:", error.message);
