@@ -1,13 +1,13 @@
 const axios = require('axios');
 
-const description = `Search and download MP3 from YouTube. Usage: /ytbmp3 [title]`;
+const description = `Search and download MP3 from YouTube. Usage: /ytb [title]`;
 
 module.exports = {
   description,
   execute: async (args, senderId, sendMessage) => {
     try {
       if (!args || !args.trim()) {
-        return sendMessage(senderId, { text: "❌ Usage: /ytbmp3 [title]" });
+        return sendMessage(senderId, { text: "❌ Usage: /ytb [title]" });
       }
 
       const title = args.trim();
@@ -32,6 +32,7 @@ module.exports = {
 
       await sendMessage(senderId, { text: responseText });
 
+      // Now wait for user's next message to choose a video by number
       const waitForReply = (message) => {
         const userChoice = parseInt(message.text, 10);
         if (userChoice >= 1 && userChoice <= videoChoices.length) {
@@ -44,7 +45,7 @@ module.exports = {
       return waitForReply;
 
     } catch (error) {
-      console.error("Error in /ytbmp3 command:", error.message);
+      console.error("Error in /ytb command:", error.message);
       await sendMessage(senderId, { text: "❌ An error occurred while fetching the videos." });
     }
   },
@@ -63,10 +64,9 @@ async function downloadMP3(videoUrl, senderId) {
     const title = musicResponse.data.title;
 
     await sendMessage(senderId, {
-      text: `🎶 Here's your MP3 download link for "${title}".`,
+      text: `🎶 Here's your MP3 download link for "${title}":\n${downloadLink}\n\nNote: The link will auto-delete after 10 minutes.`,
     });
-    sendMessage(senderId, { attachment: { type: "audio", payload: { url: downloadLink, is_reusable: true } } });
-    
+
   } catch (error) {
     console.error("Error fetching MP3:", error.message);
     await sendMessage(senderId, { text: "❌ An error occurred while fetching the MP3." });
