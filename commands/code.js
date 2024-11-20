@@ -1,46 +1,31 @@
-const fs = require('fs');
-const path = require('path');
+const description = `Usage: /code [filename]`;
 
 module.exports = {
-  description: "/code <filename>",
-  execute: async (message, args) => {
+  description,
+  execute: async (args, senderId, sendMessage) => {
+    const fs = require('fs');
+    const path = require('path');
+
     try {
-      if (!args[0]) {
-        return {
-          text: "Please specify the command file name. Example: `code commandName`",
-        };
+      if (!args || !args.trim()) {
+        return sendMessage(senderId, { text: "❌ Usage: /code [filename]" });
       }
 
-      const commandName = args[0];
+      const commandName = args.trim();
       const commandFilePath = path.join(__dirname, `${commandName}.js`);
 
       if (!fs.existsSync(commandFilePath)) {
-        return {
-          text: `The command file '${commandName}.js' does not exist.`,
-        };
+        return sendMessage(senderId, { text: `❌ The command file '${commandName}.js' does not exist.` });
       }
 
       const fileContent = fs.readFileSync(commandFilePath, 'utf8');
 
-      const maxLength = 2000;
-      if (fileContent.length > maxLength) {
-        const chunks = [];
-        for (let i = 0; i < fileContent.length; i += maxLength) {
-          chunks.push(fileContent.substring(i, i + maxLength));
-        }
-        return chunks.map((chunk, index) => ({
-          text: `Part ${index + 1}:\n\`\`\`js\n${chunk}\n\`\`\``,
-        }));
-      }
-
-      return {
-        text: `\`\`\`js\n${fileContent}\n\`\`\``,
-      };
+      await sendMessage(senderId, {
+        text: `📄 Content of '${commandName}.js':\n\`\`\`js\n${fileContent}\n\`\`\``,
+      });
     } catch (error) {
-      console.error("Error fetching command content:", error);
-      return {
-        text: "An error occurred while fetching the command content.",
-      };
+      console.error("Error in /code command:", error.response?.data || error.message);
+      await sendMessage(senderId, { text: "❌ An error occurred while fetching the command content." });
     }
   },
 };
