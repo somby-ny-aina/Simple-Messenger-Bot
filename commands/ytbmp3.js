@@ -31,7 +31,7 @@ module.exports = {
         text: `Title: "${selectedVideo.title}"\nDuration: ${selectedVideo.duration}\nViews: ${selectedVideo.views}\n\nDownloading MP3...`,
       });
 
-      await downloadMP3(selectedVideo.url, senderId);
+      await downloadMP3(selectedVideo.url, senderId, sendMessage);
       
     } catch (error) {
       console.error("Error in /ytbmp3 command:", error.message);
@@ -40,7 +40,7 @@ module.exports = {
   },
 };
 
-async function downloadMP3(videoUrl, senderId) {
+async function downloadMP3(videoUrl, senderId, sendMessage) {
   try {
     const musicUrl = `https://apiv2.kenliejugarap.com/music?url=${encodeURIComponent(videoUrl)}`;
     const musicResponse = await axios.get(musicUrl);
