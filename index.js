@@ -105,8 +105,8 @@ const prePrompt = "[ You are Smo ( name from Somby ), a helpful assistant that p
 
 const chatGpt4o = async (text, senderId) => {
   try {
-    const response = await axios.get(`https://orc-six-v2.vercel.app/gpt4-v2`, {
-      params: { ask: `${prePrompt}\n${encodeURIComponent(text)}`, id: senderId }
+    const response = await axios.get(`https://blackbox-api-chi.vercel.app/api/blackbox`, {
+      params: { text: `${prePrompt}\n${encodeURIComponent(text)}`, conversationId: senderId, model: "gpt-4o" }
     });
     return response.data.response;
   } catch (err) {
