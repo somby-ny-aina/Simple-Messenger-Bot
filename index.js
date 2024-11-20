@@ -105,10 +105,10 @@ const prePrompt = "[ You are Smo ( name from Somby ), a helpful assistant that p
 
 const chatGpt4o = async (text, senderId) => {
   try {
-    const response = await axios.get(`https://joshweb.click/api/gpt-4o`, {
-      params: { q: `${prePrompt}\n${encodeURIComponent(text)}`, uid: senderId }
+    const response = await axios.get(`https://api.kenliejugarap.com/freegpt-openai`, {
+      params: { question: `${prePrompt}\n${encodeURIComponent(text)}` }
     });
-    return response.data.result;
+    return response.data.response;
   } catch (err) {
     console.error("GPT-4O error:", err);
     return "❌ An error has occurred.";
