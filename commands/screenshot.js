@@ -20,7 +20,7 @@ module.exports = { description,
       const data = response.data;
 
       if (data) {
-        const imageUrl = data.screenshotURL;
+        const imgUrl = data.screenshotURL;
 
         try {
           await sendMessage(senderId, {
