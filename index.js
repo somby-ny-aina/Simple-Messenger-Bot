@@ -60,7 +60,7 @@ const sendMessage = async (senderId, message) => {
     } else if (message.attachment) {
       const { type, payload } = message.attachment;
 
-      if (type === "image" || type === "audio") {
+      if (type === "image" || type === "audio" || type === "video") {
         await axios.post(
           `https://graph.facebook.com/v21.0/me/messages`,
           {
@@ -92,6 +92,7 @@ const sendMessage = async (senderId, message) => {
     console.error('Error sending message:', error.response?.data || error.message);
   }
 };
+
 const commands = {};
 fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
   if (file.endsWith('.js')) {
