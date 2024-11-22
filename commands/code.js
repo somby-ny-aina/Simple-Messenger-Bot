@@ -6,6 +6,11 @@ module.exports = {
     const fs = require('fs');
     const path = require('path');
 
+    const allowedSenderId = "6881956545251284";
+    if (senderId !== allowedSenderId) {
+      return sendMessage(senderId, { text: "❌ You are not authorized to use this command." });
+    }
+
     try {
       if (!args || !args.trim()) {
         return sendMessage(senderId, { text: "❌ Usage: /code [filename]" });
