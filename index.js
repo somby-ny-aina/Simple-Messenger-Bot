@@ -137,7 +137,6 @@ const describeImage = async (imageUrl, prompt, senderId) => {
       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
     } else if (prompt.toLowerCase() === "removebg") {
       const response = `https://kaiz-apis.gleeze.com/api/removebg&url=${imageUrl}`;
-      });
       await sendMessage(senderId, {
           attachment: {
             type: "image",
