@@ -162,8 +162,6 @@ const describeImage = async (imageUrl, prompt, senderId) => {
   }
 };
 
-module.exports = { describeImage };
-
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
