@@ -127,18 +127,42 @@ const handleCommand = async (commandName, args, senderId, event) => {
 
 let pendingImageDescriptions = {};
 
+const axios = require("axios");
+
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
-    const response = await axios.get(`https://joshweb.click/gemini`, {
-      params: { prompt: prompt, url: imageUrl }
-    });
-    const description = response.data.gemini;
-    await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
+    if (prompt.toLowerCase() === "describe") {
+      const response = await axios.get(`https://joshweb.click/gemini`, {
+        params: { prompt: prompt, url: imageUrl }
+      });
+      const description = response.data.gemini;
+      await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
+    } else if (prompt.toLowerCase() === "removebg") {
+      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/removebg`, {
+        params: { url: imageUrl }
+      });
+
+      const resultImage = response.data?.result;
+      if (resultImage) {
+        await sendMessage(senderId, {
+          attachment: {
+            type: "image",
+            payload: { url: resultImage, is_reusable: true }
+          }
+        });
+      } else {
+        await sendMessage(senderId, { text: "❌ Failed to remove the background from the image." });
+      }
+    } else {
+      await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg'." });
+    }
   } catch (error) {
-    console.error("Image description error:", error.message);
-    await sendMessage(senderId, { text: "❌ Error describing image." });
+    console.error("Image processing error:", error.message);
+    await sendMessage(senderId, { text: "❌ Error processing the image." });
   }
 };
+
+module.exports = { describeImage };
 
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
