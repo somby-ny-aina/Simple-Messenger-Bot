@@ -207,21 +207,6 @@ const handleEvent = async (event) => {
   }
 };
 
-app.use(bodyParser.json());
-
-app.post('/webhook', (req, res) => {
-  const body = req.body;
-  if (body.object === 'page') {
-    body.entry.forEach(async entry => {
-      const webhookEvent = entry.messaging[0];
-      await handleEvent(webhookEvent);
-    });
-    res.status(200).send('EVENT_RECEIVED');
-  } else {
-    res.sendStatus(404);
-  }
-});
-
 app.get('/webhook', (req, res) => {
   const VERIFY_TOKEN = "somby";
 
@@ -243,6 +228,22 @@ app.get('/webhook', (req, res) => {
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
+});
+
+
+app.use(bodyParser.json());
+
+app.post('/webhook', (req, res) => {
+  const body = req.body;
+  if (body.object === 'page') {
+    body.entry.forEach(async entry => {
+      const webhookEvent = entry.messaging[0];
+      await handleEvent(webhookEvent);
+    });
+    res.status(200).send('EVENT_RECEIVED');
+  } else {
+    res.sendStatus(404);
+  }
 });
 
 app.listen(PORT, () => {
