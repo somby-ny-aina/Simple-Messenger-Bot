@@ -127,8 +127,6 @@ const handleCommand = async (commandName, args, senderId, event) => {
 
 let pendingImageDescriptions = {};
 
-const axios = require("axios");
-
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
     if (prompt.toLowerCase() === "describe") {
@@ -206,8 +204,8 @@ const handleImage = async (event) => {
 
   if (attachments && attachments[0].type === "image") {
     const imageUrl = attachments[0].payload.url;
-    pendingImageDescriptions[senderID] = imageUrl; // Save image URL to wait for the prompt
-    await sendMessage(senderID, { text: "📷 Image received! Now send a text to describe it." });
+    pendingImageDescriptions[senderID] = imageUrl;
+    await sendMessage(senderID, { text: "📷 Image received! Now send 'describe' or 'removebg'." });
   }
 };
 
