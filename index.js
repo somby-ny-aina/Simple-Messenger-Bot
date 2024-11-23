@@ -129,23 +129,50 @@ let pendingImageDescriptions = {};
 
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
-    if (prompt.toLowerCase() === "describe") {
+    if (prompt === "describe") {
       const response = await axios.get(`https://joshweb.click/gemini`, {
-        params: { prompt: prompt, url: imageUrl }
+        params: { prompt, url: imageUrl }
       });
       const description = response.data.gemini;
       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
-    } else if (prompt.toLowerCase() === "removebg") {
-      const response = `https://kaiz-apis.gleeze.com/api/removebg&url=${imageUrl}`;
+    } else if (prompt === "removebg") {
+      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/removebg?url=${imageUrl}`, {
+        responseType: "arraybuffer",
+      });
+
+      const tempFilePath = path.join(__dirname, "temp_removed_bg.png");
+      fs.writeFileSync(tempFilePath, response.data);
+
+      const fileData = fs.createReadStream(tempFilePath);
+      const uploadResponse = await axios.post(
+        `https://graph.facebook.com/v21.0/me/message_attachments`,
+        {
+          message: {
+            attachment: {
+              type: "image",
+              payload: { is_reusable: true },
+            },
+          },
+          filedata: fileData,
+        },
+        {
+          params: { access_token: PAGE_ACCESS_TOKEN },
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      const attachmentId = uploadResponse.data.attachment_id;
+
       await sendMessage(senderId, {
-          attachment: {
-            type: "image",
-            payload: { url: response, is_reusable: true }
-          }
-        });
-      
+        attachment: {
+          type: "image",
+          payload: { attachment_id: attachmentId },
+        },
+      });
+
+      fs.unlinkSync(tempFilePath);
     } else {
-      await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg'." });
+      await sendMessage(senderId, { text: "❌ Invalid prompt provided." });
     }
   } catch (error) {
     console.error("Image processing error:", error.message);
