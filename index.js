@@ -136,21 +136,15 @@ const describeImage = async (imageUrl, prompt, senderId) => {
       const description = response.data.gemini;
       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
     } else if (prompt.toLowerCase() === "removebg") {
-      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/removebg`, {
-        params: { url: imageUrl }
+      const response = `https://kaiz-apis.gleeze.com/api/removebg&url=${imageUrl}`;
       });
-
-      const resultImage = response.data?.result;
-      if (resultImage) {
-        await sendMessage(senderId, {
+      await sendMessage(senderId, {
           attachment: {
             type: "image",
-            payload: { url: resultImage, is_reusable: true }
+            payload: { url: response, is_reusable: true }
           }
         });
-      } else {
-        await sendMessage(senderId, { text: "❌ Failed to remove the background from the image." });
-      }
+      
     } else {
       await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg'." });
     }
