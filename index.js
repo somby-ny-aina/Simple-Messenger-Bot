@@ -223,10 +223,10 @@ app.post('/webhook', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-  const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+  const VERIFY_TOKEN = "somby";
 
   const mode = req.query['hub.mode'];
-  const token = "somby";
+  const token = req.query['hub.token'];
   const challenge = req.query['hub.challenge'];
 
   if (mode && token) {
