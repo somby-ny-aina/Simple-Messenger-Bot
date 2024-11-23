@@ -129,50 +129,30 @@ let pendingImageDescriptions = {};
 
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
-    if (prompt === "describe") {
+    if (prompt.toLowerCase() === "describe") {
       const response = await axios.get(`https://joshweb.click/gemini`, {
-        params: { prompt, url: imageUrl }
+        params: { prompt: prompt, url: imageUrl }
       });
       const description = response.data.gemini;
       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
-    } else if (prompt === "removebg") {
-      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/removebg?url=${imageUrl}`, {
-        responseType: "arraybuffer",
+    } else if (prompt.toLowerCase() === "removebg") {
+      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/removebg`, {
+        params: { url: imageUrl }
       });
 
-      const tempFilePath = path.join(__dirname, "temp_removed_bg.png");
-      fs.writeFileSync(tempFilePath, response.data);
-
-      const fileData = fs.createReadStream(tempFilePath);
-      const uploadResponse = await axios.post(
-        `https://graph.facebook.com/v21.0/me/message_attachments`,
-        {
-          message: {
-            attachment: {
-              type: "image",
-              payload: { is_reusable: true },
-            },
-          },
-          filedata: fileData,
-        },
-        {
-          params: { access_token: PAGE_ACCESS_TOKEN },
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      const attachmentId = uploadResponse.data.attachment_id;
-
-      await sendMessage(senderId, {
-        attachment: {
-          type: "image",
-          payload: { attachment_id: attachmentId },
-        },
-      });
-
-      fs.unlinkSync(tempFilePath);
+      const resultImage = response.data?;
+      if (resultImage) {
+        await sendMessage(senderId, {
+          attachment: {
+            type: "image",
+            payload: { url: resultImage, is_reusable: true }
+          }
+        });
+      } else {
+        await sendMessage(senderId, { text: "❌ Failed to remove the background from the image." });
+      }
     } else {
-      await sendMessage(senderId, { text: "❌ Invalid prompt provided." });
+      await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg'." });
     }
   } catch (error) {
     console.error("Image processing error:", error.message);
