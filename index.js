@@ -141,7 +141,7 @@ const describeImage = async (imageUrl, prompt, senderId) => {
       await sendMessage(senderId, {
           attachment: {
             type: "image",
-            payload: { url: resultImage, is_reusable: true }
+            payload: { url: response, is_reusable: true }
           }
         });
     } else {
