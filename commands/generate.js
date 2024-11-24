@@ -1,29 +1,63 @@
 const axios = require("axios");
 
-const description = `/generate <prompt>\nE.g: /generate cat`;
-
 module.exports = {
-  description,
-  execute: async (prompt, senderId, sendMessage) => {
-    if (!prompt) {
-      return sendMessage(senderId, { text: "❌ Please provide a prompt after /generate." });
+  description: "Generate an image using SDXL API.\nUsage: /generate <number> | <prompt>",
+  async execute(prompt, senderId, sendMessage) {
+    const [modelNumber, userPrompt] = prompt.split("|").map((p) => p.trim());
+
+    if (!modelNumber || !userPrompt) {
+      return sendMessage(senderId, { text: "❌ Usage: /generate <modelnumber> | <prompt>" });
     }
 
-    try {
-      const imageUrl = `https://api.kenliejugarap.com/flux-disney/?prompt=${encodeURIComponent(prompt)}`;
+    const models = [
+      "3d-model",
+      "analog-film",
+      "anime",
+      "cinematic",
+      "comic-book",
+      "digital-art",
+      "enhance",
+      "fantasy-art",
+      "isometric",
+      "line-art",
+      "low-poly",
+      "neon-punk",
+      "origami",
+      "photographic",
+      "pixel-art",
+      "texture",
+      "craft-clay"
+    ];
 
-      await sendMessage(senderId, {
-        attachment: {
-          type: "image",
-          payload: {
-            url: imageUrl,
-            is_reusable: true,
-          },
-        },
+    const modelIndex = parseInt(modelNumber, 10) - 1;
+
+    if (isNaN(modelIndex) || modelIndex < 0 || modelIndex >= models.length) {
+      return sendMessage(senderId, {
+        text: `❌ Invalid model number. Use one of the following:\n${models
+          .map((model, index) => `${index + 1}. ${model}`)
+          .join("\n")}`,
       });
+    }
+
+    const selectedModel = models[modelIndex];
+
+    try {
+      await sendMessage(senderId, { text: `⏳ Generating image using the model: ${selectedModel}...` });
+
+      const response = `https://kaiz-apis.gleeze.com/api/sdxl?prompt=${encodeURIComponent(userPrompt)}&model=${selectedModel}`;
+      await sendMessage(senderId, {
+          attachment: {
+            type: "image",
+            payload: {
+              url: response,
+              is_reusable: true,
+            },
+          },
+        });
+    
     } catch (error) {
-      console.error("Generate error:", error.message);
-      sendMessage(senderId, { text: "❌ Error generating image." });
+      console.error("Error generating image:", error.message);
+      await sendMessage(senderId, { text: "❌ Error generating image. Please try again later." });
     }
   },
 };
