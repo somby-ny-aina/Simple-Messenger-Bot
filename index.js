@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const fs = require('fs');
 const path = require('path');
+const fetch = require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -137,13 +138,39 @@ const describeImage = async (imageUrl, prompt, senderId) => {
       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
 
     } else if (prompt.toLowerCase() === "removebg") {
-      const response = `https://kaiz-apis.gleeze.com/api/removebg?url=${imageUrl}`;
-      await sendMessage(senderId, {
-          attachment: {
-            type: "image",
-            payload: { url: response, is_reusable: true }
+      const removeBgUrl = `https://kaiz-apis.gleeze.com/api/removebg?url=${encodeURIComponent(imageUrl)}`;
+      
+      const response = await fetch(removeBgUrl);
+      if (!response.ok) {
+        return await sendMessage(senderId, { text: "❌ Error removing the background." });
+      }
+      const buffer = await response.buffer();
+
+      const uploadResponse = await fetch(
+        `https://graph.facebook.com/v21.0/me/message_attachments?access_token=${PAGE_ACCESS_TOKEN}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data"
+          },
+          body: {
+            filedata: buffer
           }
-        });
+        }
+      );
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResult.attachment_id) {
+        return await sendMessage(senderId, { text: "❌ Failed to upload the image." });
+      }
+
+      await sendMessage(senderId, {
+        attachment: {
+          type: "image",
+          payload: { attachment_id: uploadResult.attachment_id }
+        }
+      });
+
     } else {
       await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg'." });
     }
@@ -152,7 +179,6 @@ const describeImage = async (imageUrl, prompt, senderId) => {
     await sendMessage(senderId, { text: "❌ Error processing the image." });
   }
 };
-
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
