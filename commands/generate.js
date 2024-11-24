@@ -49,7 +49,7 @@ module.exports = {
           attachment: {
             type: "image",
             payload: {
-              url: response,
+              url: `https://genosite-w0aa.onrender.com/convert-webp-to-jpg?imageUrl=${response}`,
               is_reusable: true,
             },
           },
