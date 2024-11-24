@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const fs = require('fs');
 const path = require('path');
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
