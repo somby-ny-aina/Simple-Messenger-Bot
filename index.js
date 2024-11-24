@@ -140,34 +140,10 @@ const describeImage = async (imageUrl, prompt, senderId) => {
     } else if (prompt.toLowerCase() === "removebg") {
       const removeBgUrl = `https://kaiz-apis.gleeze.com/api/removebg?url=${encodeURIComponent(imageUrl)}`;
       
-      const response = await fetch(removeBgUrl);
-      if (!response.ok) {
-        return await sendMessage(senderId, { text: "❌ Error removing the background." });
-      }
-      const buffer = await response.buffer();
-
-      const uploadResponse = await fetch(
-        `https://graph.facebook.com/v21.0/me/message_attachments?access_token=${PAGE_ACCESS_TOKEN}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data"
-          },
-          body: {
-            filedata: buffer
-          }
-        }
-      );
-      const uploadResult = await uploadResponse.json();
-
-      if (!uploadResult.attachment_id) {
-        return await sendMessage(senderId, { text: "❌ Failed to upload the image." });
-      }
-
       await sendMessage(senderId, {
         attachment: {
           type: "image",
-          payload: { attachment_id: uploadResult.attachment_id }
+          payload: { url: removeBgUrl, is_reusable: true }
         }
       });
 
