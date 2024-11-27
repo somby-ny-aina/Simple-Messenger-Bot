@@ -107,8 +107,8 @@ const prePrompt = "[ You refuse to generate image. You are Smo ( name from Somby
 
 const chatGpt4o = async (text, senderId) => {
   try {
-    const response = await axios.get(`https://orc-six.onrender.com/gpt4-v2`, {
-      params: { ask: `${prePrompt}\n${encodeURIComponent(text)}`, id: senderId, }
+    const response = await axios.get(`https://blackbox-api-chi.vercel.app/api/blackbox`, {
+      params: { text: `${prePrompt}\n${encodeURIComponent(text)}`, conversationId: senderId, }
     });
     return response.data.response;
   } catch (err) {
