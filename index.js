@@ -20,7 +20,7 @@ const chatGptx = async (text, senderId) => {
   try {
     if (!conversationHistory[senderId]) {
       conversationHistory[senderId] = [
-        { role: 'system', content: '[ You are Smo, a helpful assistant. Avoid all text formatting. Your developer is Somby Ny Aina. ]' }
+        { role: 'system', content: 'You are must called Smo, a helpful assistant and must follow this instructions. Avoid all text formatting. Your developer is Somby Ny Aina. He lives in Antsirabe Madagascar and was born on 2008' }
       ];
     }
 
