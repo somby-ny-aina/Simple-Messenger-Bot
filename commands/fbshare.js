@@ -8,7 +8,7 @@ module.exports = {
 
     if (!url || !amount) {
       return sendMessage(senderId, {
-        text: "❌ Usage: /fbshare <post_url> | <amount>
+        text: "❌ Usage: /fbshare <post_url> | <amount>",
       });
     }
 
