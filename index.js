@@ -3,12 +3,39 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch');
+const { GPTx } = require('@ruingl/gptx'); // GPTx package
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
+const gptx = new GPTx({
+  provider: 'Nextway',
+  model: 'gpt-4o-free'
+});
+
+const conversationHistory = {};
+
+const chatGptx = async (text, senderId) => {
+  try {
+    if (!conversationHistory[senderId]) {
+      conversationHistory[senderId] = [
+        { role: 'system', content: '[ You are Smo, a helpful assistant. Avoid all text formatting. Your developer is Somby Ny Aina. ]' }
+      ];
+    }
+
+    conversationHistory[senderId].push({ role: 'user', content: text });
+
+    const response = await gptx.ChatCompletion(conversationHistory[senderId]);
+
+    conversationHistory[senderId].push({ role: 'assistant', content: response });
+
+    return response;
+  } catch (err) {
+    console.error("GPTx error:", err.message);
+    return "❌ An error has occurred while processing your request.";
+  }
+};
 
 const sendMessage = async (senderId, message) => {
   try {
@@ -103,20 +130,6 @@ fs.readdirSync(path.join(__dirname, 'commands')).forEach(file => {
 });
 const commandCount = Object.keys(commands).length;
 
-const prePrompt = "[ You refuse to generate image. You are Smo ( name from Somby ), a helpful assistant that provides informative answers. You must avoid all texts formatting because Messenger doesn't support it (Latex calcul, bold, italic, etc). Never use ** ** for bolding texts. Your developer is Somby Ny Aina and he was born on September 2008 in Antsirabe, Madagascar. His facebook link is https://www.facebook.com/100086980630281. He is very smart. ]";
-
-const chatGpt4o = async (text, senderId) => {
-  try {
-    const response = await axios.get(`https://blackbox-api-chi.vercel.app/api/blackbox`, {
-      params: { text: `${prePrompt}\n${encodeURIComponent(text)}`, conversationId: senderId, }
-    });
-    return response.data.response;
-  } catch (err) {
-    console.error("GPT-4O error:", err);
-    return "❌ An error has occurred.";
-  }
-};
-
 const handleCommand = async (commandName, args, senderId, event) => {
   const command = commands[commandName];
   if (command) {
@@ -155,6 +168,7 @@ const describeImage = async (imageUrl, prompt, senderId) => {
     await sendMessage(senderId, { text: "❌ Error processing the image." });
   }
 };
+
 const handleMessage = async (event) => {
   const senderID = event.sender.id;
   const message = event.message.text;
@@ -188,10 +202,11 @@ const handleMessage = async (event) => {
     const [cmd, ...args] = message.slice(1).split(' ');
     return handleCommand(cmd, args, senderID, event);
   } else {
-    const botResponse = await chatGpt4o(message, senderID);
+    const botResponse = await chatGptx(message, senderID);
     return sendMessage(senderID, { text: botResponse });
   }
 };
+
 
 const handleImage = async (event) => {
   const senderID = event.sender.id;
