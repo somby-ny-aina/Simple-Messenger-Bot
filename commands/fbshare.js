@@ -15,7 +15,7 @@ module.exports = {
     try {
       await sendMessage(senderId, { text: "⏳ Submitting share request..." });
 
-      const response = await axios.post("https://spamsharev1api.onrender.com/api/submit", {
+      const response = await axios.post("https://tests-qb46.onrender.com/submit-share", {
         cookie: cookie,
         url: url,
         amount: parseInt(amount, 10),
