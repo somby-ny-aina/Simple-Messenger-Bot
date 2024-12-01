@@ -2,171 +2,209 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Smo - Somby Ny Aina</title>
-  <script src="swe.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook Autoshare</title>
   <style>
-  body {
-    margin: 0;
-    background-color: #1A1A1A;
-    font-family: Arial, sans-serif;
-  }
-  
-  .chead {
-    text-align: center;
-    align-content: center;
-    width: 100%;
-    height: 60px;
-    background-color: #1A1A1A;
-    margin: 0 0 0;
-    position: fixed;
-  }
-  
-  .chead b {
-    background-color: #FF05E7;
-    font-size: 10pt;
-    padding: 10px 80px;
-    bottom: 1px;
-    color: white;
-    border-radius: 10px
-  }
-  
-  .cbody {
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top: 75px;
-    padding-bottom: 70px;
-  }
-  
-  .cfoot {
-    bottom: 0;
-    padding: 5px;
-    margin: 0 auto;
-    width: 100%;
-    height: 45px;
-    background-color: #0F0F0F;
-    position: fixed;
-    border: 1px solid #0F0F0F;
-    text-align: center
-  }
-  
-  #prpt {
-    padding: 5px;
-    height: 35px;
-    color: rgba(255, 255, 255, 1);
-    width: 70%;
-    border: 1.5px solid #FF05E7;
-    border-radius: 10px;
-    align-content: center;
-    background-color: rgba(255, 255, 255, 0.1)
-  }
-  
-  #prpt:focus {
-    outline: none;
-    border: 2px solid #FF05E7;
-  }
-  
-  #button {
-    padding: 10px;
-    margin: 5px;
-    color: white;
-    width: 15%;
-    background-color: #FF05E7;
-    border: 1px solid #FF05E7;
-    border-radius: 10px;
-  }
-  
-  .cmess {
-    max-width: 70%;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 5px;
-    align-items: flex-start;
-  }
-  
-  .cmess.user {
-    background-color: #A61598;
-    align-self: flex-end;
-    text-align: left;
-    color: white;
-  }
-  
-  .cmess.bot {
-    background-color: rgba(255, 255, 255, 0.2);
-    align-self: flex-start;
-    text-align: left;
-    color: white;
-  }
-  </style>
-</head>
-<body>
-  <div class="chead">
-    <b>Smo - Somby Ny Aina</b>
-  </div>
-  <div id="cbody" class="cbody"></div>
-  <div class="cfoot">
-    <input id="prpt" type="text" placeholder="&nbsp;Write your message here...">
-    <button id="button" onclick="sendPr()"><b>Send</b></button>
-  </div>
-  <script type="text/javascript">
-    Swal.fire({
-      position: "center",
-      title: "Welcome",
-      text: "This website is used for asking questions. Enjoy! ",
-    });
-         
-    const date = new Date().toString();
-    const weltxt = `Hello!\n\n𝗨𝘀𝗲𝗿 𝗮𝗴𝗲𝗻𝘁: ${navigator.userAgent}\n\n𝗔𝗽𝗽𝗻𝗮𝗺𝗲: ${navigator.appName}\n\n𝗔𝗽𝗽 𝗰𝗼𝗱𝗲 𝗻𝗮𝗺𝗲: ${navigator.appCodeName}\n\n𝗔𝗽𝗽 𝘃𝗲𝗿𝘀𝗶𝗼𝗻: ${navigator.appVersion}\n\n𝗟𝗮𝗻𝗴𝘂𝗮𝗴𝗲: ${navigator.language}\n\n𝗣𝗹𝗮𝘁𝗳𝗼𝗿𝗺: ${navigator.platform}\n\n𝗢𝗻𝗹𝗶𝗻𝗲: ${navigator.onLine}\n\n𝗗𝗮𝘁𝗲: ${date}`;
-    
-    const cbody = document.getElementById('cbody');
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-    const botM = document.createElement("tt");
-    botM.className = "cmess bot";
-    botM.innerText = weltxt;
-    cbody.appendChild(botM);
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
 
-    const conversationHistory = [];
+    .form-container {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 700px;
+      padding: 40px;
+      border-radius: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-    function send(message) {
-      const botM = document.createElement("tt");
-      botM.className = "cmess bot";
-      botM.innerText = message;
-      cbody.appendChild(botM);
+    .form-container:hover {
+      transform: translateY(-10px);
+    }
+
+    .form-container h1 {
+      font-size: 28px;
+      color: #4c6ef5;
+      text-align: center;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
-    async function sendPr() {
-      const input = document.getElementById("prpt");
-      const prmpt = input.value;
-      if (!prmpt) return;
-      input.value = '';
+    .form-container h5 {
+      color: #9BAFFF;
+      text-align: center;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
 
-      const userM = document.createElement("tt");
-      userM.className = "cmess user";
-      userM.innerText = prmpt;
-      cbody.appendChild(userM);
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-      try {
-        conversationHistory.push({ role: 'user', content: prmpt });
 
-        const response = await axios.post('/chat', { 
-          history: conversationHistory 
-        });
+    input, textarea {
+      width: 100%;
+      padding: 20px 12px 12px 12px;
+      border: 2px solid #000000;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #000000;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
 
-        const assistantResponse = response.data.message;
-        conversationHistory.push({ role: 'assistant', content: assistantResponse });
+    input:focus, textarea:focus {
+      border-color: #4c6ef5;
+      outline: none;
+    }
 
-        send(assistantResponse);
-      } catch (error) {
-        console.error("Error with /chat:", error.message);
-        send("❌ An error occurred while processing your request.");
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #4c6ef5;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background-color: #3a5cb2;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        width: 90%;
       }
     }
+ 
+    .floating-label {
+      position: relative;
+    }
 
+    .floating-label input:focus, 
+    .floating-label textarea:focus {
+      padding-top: 20px;
+}
+
+    .floating-label input:focus + label, 
+    .floating-label textarea:focus + label {
+      transform: translateY(-1px);
+      font-size: 12px;
+      color: #4c6ef5;
+      z-index: 1;
+    }
+
+    .floating-label label {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      font-size: 10px;
+      color: #535353;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+  </style>
+  <script src="swe.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <div class="form-container">
+      <h1>FACEBOOK AUTOSHARE</h1>
+      <h5>( By Somby Ny Aina )</h5>
+      <form id="submitForm" action="https://autoshare.marjhun.fun/api/submit" method="POST">
+        
+        <div class="form-group floating-label">
+          <textarea id="cookie" name="cookie" required rows="5" placeholder="Paste your appstate JSON" datalist="cookie"></textarea>
+          <label for="cookie">Cookies</label>
+        </div>
+
+        <div class="form-group floating-label">
+          <input type="url" id="url" name="url" required placeholder="https://www.facebook.com/1000869...">
+          <label for="url">Facebook link</label>
+        </div>
+
+        <div class="form-group floating-label">
+          <input type="number" id="amount" name="amount" required placeholder="1 - 50000">
+          <label for="amount">Amount</label>
+        </div>
+
+        <div class="form-group floating-label">
+          <input type="number" id="interval" name="interval" value="1" required placeholder="1 - 60">
+          <label for="interval">Interval (seconds)</label>
+        </div>
+
+        <button type="submit">Submit</button>
+        
+        <div id="error-message" class="error"></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    document.getElementById("submitForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const errorMessage = document.getElementById("error-message");
+
+      errorMessage.textContent = "";
+
+      if (!formData.get("cookie") || !formData.get("url") || !formData.get("amount") || !formData.get("interval")) {
+        errorMessage.textContent = "All fields are required!";
+        return;
+      }
+
+      fetch(this.action, {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        Swal.fire({
+           icon: "success",
+           position: "center",
+           title: "Done",
+           text: "Data submitted successfuly! ",
+        });
+        console.log(data);
+      })
+      .catch(error => {
+        errorMessage.textContent = "Error submitting data!";
+        Swal.fire({
+           icon: "error",
+           position: "center",
+           text: "Error submitting data! ",
+        });
+        console.error(error);
+      });
+    });
   </script>
+
 </body>
-</html>
+</html> 
