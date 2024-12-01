@@ -11,6 +11,7 @@
   body {
     margin: 0;
     background-color: #1A1A1A;
+    font-family: Arial, sans-serif;
   }
   
   .chead {
@@ -145,7 +146,7 @@
       try {
         conversationHistory.push({ role: 'user', content: prmpt });
 
-        const response = await axios.post('https://smo-lm7x.onrender.com/chat', { 
+        const response = await axios.post('/chat', { 
           history: conversationHistory 
         });
 
