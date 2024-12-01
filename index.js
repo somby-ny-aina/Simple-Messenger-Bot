@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const fs = require('fs');
 const path = require('path');
-const { GPTx } = require('@ruingl/gptx'); // GPTx package
+const { GPTx } = require('@ruingl/gptx');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -275,6 +275,24 @@ app.post('/webhook', (req, res) => {
     res.sendStatus(404);
   }
 });
+
+app.post('/chat', async (req, res) => {
+    const { history } = req.body; 
+
+    if (!history || !Array.isArray(history)) {
+        return res.status(400).json({ error: 'L\'historique doit être un tableau.' });
+    }
+
+    try {
+        const response = await gptx.ChatCompletion(history);
+
+        res.json({ message: response });
+    } catch (error) {
+        console.error('Erreur avec GPTx:', error.message);
+        res.status(500).json({ error: 'Une erreur est survenue lors du traitement de votre requête.' });
+    }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Messenger bot is starting. 🤖 🇲🇬`);
