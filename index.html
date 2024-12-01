@@ -1,115 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="This is a simple Facebook Messenger bot created by Somby Ny Aina. The bot responds to user messages by interacting with an AI service.">
-    <title>Facebook Messenger Bot</title>
-    
-    <style>
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f4f4f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Container for the content */
-        .container {
-            background-color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            max-width: 600px;
-            width: 100%;
-            padding: 30px;
-            text-align: center;
-        }
-
-        /* Header */
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #4a90e2;
-        }
-
-        /* Paragraph */
-        p {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #666;
-        }
-
-        /* List styling */
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
-
-        li {
-            background-color: #e8f0fe;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-            color: #333;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #999;
-        }
-
-        /* Button (if needed) */
-        .cta-btn {
-            background-color: #4a90e2;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-
-        .cta-btn:hover {
-            background-color: #357ab8;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smo - Somby Ny Aina</title>
+  <script src="swe.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+  body {
+    margin: 0;
+    background-color: #1A1A1A;
+  }
+  
+  .chead {
+    text-align: center;
+    align-content: center;
+    width: 100%;
+    height: 60px;
+    background-color: #1A1A1A;
+    margin: 0 0 0;
+    position: fixed;
+  }
+  
+  .chead b {
+    background-color: #FF05E7;
+    font-size: 10pt;
+    padding: 10px 80px;
+    bottom: 1px;
+    color: white;
+    border-radius: 10px
+  }
+  
+  .cbody {
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 75px;
+    padding-bottom: 70px;
+  }
+  
+  .cfoot {
+    bottom: 0;
+    padding: 5px;
+    margin: 0 auto;
+    width: 100%;
+    height: 45px;
+    background-color: #0F0F0F;
+    position: fixed;
+    border: 1px solid #0F0F0F;
+    text-align: center
+  }
+  
+  #prpt {
+    padding: 5px;
+    height: 35px;
+    color: rgba(255, 255, 255, 1);
+    width: 70%;
+    border: 1.5px solid #FF05E7;
+    border-radius: 10px;
+    align-content: center;
+    background-color: rgba(255, 255, 255, 0.1)
+  }
+  
+  #prpt:focus {
+    outline: none;
+    border: 2px solid #FF05E7;
+  }
+  
+  #button {
+    padding: 10px;
+    margin: 5px;
+    color: white;
+    width: 15%;
+    background-color: #FF05E7;
+    border: 1px solid #FF05E7;
+    border-radius: 10px;
+  }
+  
+  .cmess {
+    max-width: 70%;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px;
+    align-items: flex-start;
+  }
+  
+  .cmess.user {
+    background-color: #A61598;
+    align-self: flex-end;
+    text-align: left;
+    color: white;
+  }
+  
+  .cmess.bot {
+    background-color: rgba(255, 255, 255, 0.2);
+    align-self: flex-start;
+    text-align: left;
+    color: white;
+  }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Facebook Messenger Bot by Somby Ny Aina</h1>
-        <p>
-            This project is a Facebook Messenger bot built using Node.js and Express. It integrates with an AI service to provide responses to user messages. 
-        </p>
-        <p>
-            Key features:
-        </p>
-        <ul>
-            <li>Handles incoming messages and responds based on AI-generated content</li>
-            <li>Integrates with Facebook's Messenger Platform API</li>
-            <li>Built with Express.js and uses Axios for HTTP requests</li>
-        </ul>
+  <div class="chead">
+    <b>Smo - Somby Ny Aina</b>
+  </div>
+  <div id="cbody" class="cbody"></div>
+  <div class="cfoot">
+    <input id="prpt" type="text" placeholder="&nbsp;Write your message here...">
+    <button id="button" onclick="sendPr()"><b>Send</b></button>
+  </div>
+  <script type="text/javascript">
+    Swal.fire({
+      position: "center",
+      title: "Welcome",
+      text: "This website is used for asking questions. Enjoy! ",
+    });
+         
+    const date = new Date().toString();
+    const weltxt = `Hello!\n\n𝗨𝘀𝗲𝗿 𝗮𝗴𝗲𝗻𝘁: ${navigator.userAgent}\n\n𝗔𝗽𝗽𝗻𝗮𝗺𝗲: ${navigator.appName}\n\n𝗔𝗽𝗽 𝗰𝗼𝗱𝗲 𝗻𝗮𝗺𝗲: ${navigator.appCodeName}\n\n𝗔𝗽𝗽 𝘃𝗲𝗿𝘀𝗶𝗼𝗻: ${navigator.appVersion}\n\n𝗟𝗮𝗻𝗴𝘂𝗮𝗴𝗲: ${navigator.language}\n\n𝗣𝗹𝗮𝘁𝗳𝗼𝗿𝗺: ${navigator.platform}\n\n𝗢𝗻𝗹𝗶𝗻𝗲: ${navigator.onLine}\n\n𝗗𝗮𝘁𝗲: ${date}`;
+    
+    const cbody = document.getElementById('cbody');
 
-        <footer>
-            &copy; 2024 Somby Ny Aina. All rights reserved.
-        </footer>
-    </div>
+    const botM = document.createElement("tt");
+    botM.className = "cmess bot";
+    botM.innerText = weltxt;
+    cbody.appendChild(botM);
+
+    const conversationHistory = [];
+
+    async function sendPr() {
+      const input = document.getElementById("prpt");
+      const prmpt = input.value;
+      if (!prmpt) return;
+      input.value = '';
+
+      const userM = document.createElement("tt");
+      userM.className = "cmess user";
+      userM.innerText = prmpt;
+      cbody.appendChild(userM);
+
+      try {
+        conversationHistory.push({ role: 'user', content: prmpt });
+
+        const response = await axios.post('https://smo-lm7x.onrender.com/chat', { 
+          history: conversationHistory 
+        });
+
+        const assistantResponse = response.data.message;
+        conversationHistory.push({ role: 'assistant', content: assistantResponse });
+
+        send(assistantResponse);
+      } catch (error) {
+        console.error("Error with /chat:", error.message);
+        send("❌ An error occurred while processing your request.");
+      }
+    }
+
+    function send(message) {
+      const botM = document.createElement("tt");
+      botM.className = "cmess bot";
+      botM.innerText = message;
+      cbody.appendChild(botM);
+    }
+  </script>
 </body>
 </html>
