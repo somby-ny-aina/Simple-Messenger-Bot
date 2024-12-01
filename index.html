@@ -132,6 +132,13 @@
 
     const conversationHistory = [];
 
+    function send(message) {
+      const botM = document.createElement("tt");
+      botM.className = "cmess bot";
+      botM.innerText = message;
+      cbody.appendChild(botM);
+    }
+    
     async function sendPr() {
       const input = document.getElementById("prpt");
       const prmpt = input.value;
@@ -160,12 +167,6 @@
       }
     }
 
-    function send(message) {
-      const botM = document.createElement("tt");
-      botM.className = "cmess bot";
-      botM.innerText = message;
-      cbody.appendChild(botM);
-    }
   </script>
 </body>
 </html>
