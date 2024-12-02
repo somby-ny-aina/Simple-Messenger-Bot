@@ -139,7 +139,7 @@
     <div class="form-container">
       <h1>FACEBOOK AUTOSHARE</h1>
       <h5>( By Somby Ny Aina )</h5>
-      <form id="submitForm" action="https://autoshare.marjhun.fun/api/submit" method="POST">
+      <form id="submitForm" action="https://simple-messenger-bot-cvg1.onrender.com/submit" method="POST">
         
         <div class="form-group floating-label">
           <textarea id="cookie" name="cookie" required rows="5" placeholder="Paste your appstate JSON" datalist="cookie"></textarea>
@@ -147,8 +147,8 @@
         </div>
 
         <div class="form-group floating-label">
-          <input type="url" id="url" name="url" required placeholder="https://www.facebook.com/1000869...">
-          <label for="url">Facebook link</label>
+          <input type="url" id="targetUrl" name="targetUrl" required placeholder="https://www.facebook.com/1000869...">
+          <label for="targetUrl">Facebook link</label>
         </div>
 
         <div class="form-group floating-label">
@@ -175,7 +175,7 @@
 
       errorMessage.textContent = "";
 
-      if (!formData.get("cookie") || !formData.get("url") || !formData.get("amount") || !formData.get("interval")) {
+      if (!formData.get("cookie") || !formData.get("targetUrl") || !formData.get("amount") || !formData.get("interval")) {
         errorMessage.textContent = "All fields are required!";
         return;
       }
