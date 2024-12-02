@@ -1,210 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Facebook Autoshare</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #FFFFFF;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Auto Share</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #FFFFFF;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-    }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
 
-    .form-container {
-      background-color: #ffffff;
-      width: 100%;
-      max-width: 700px;
-      padding: 40px;
-      border-radius: 12px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+        .form-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 700px;
+            padding: 40px;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    .form-container:hover {
-      transform: translateY(-10px);
-    }
+        .form-container:hover {
+            transform: translateY(-10px);
+        }
 
-    .form-container h1 {
-      font-size: 28px;
-      color: #4c6ef5;
-      text-align: center;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    
-    .form-container h5 {
-      color: #9BAFFF;
-      text-align: center;
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-    }
+        .form-container h1 {
+            font-size: 28px;
+            color: #4c6ef5;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-container h5 {
+            color: #9BAFFF;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
 
+        input {
+            width: 100%;
+            padding: 20px 12px 12px 12px;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #000000;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
 
-    input, textarea {
-      width: 100%;
-      padding: 20px 12px 12px 12px;
-      border: 2px solid #000000;
-      border-radius: 8px;
-      font-size: 15px;
-      color: #000000;
-      transition: border-color 0.3s ease;
-      box-sizing: border-box;
-    }
+        input:focus {
+            border-color: #4c6ef5;
+            outline: none;
+        }
 
-    input:focus, textarea:focus {
-      border-color: #4c6ef5;
-      outline: none;
-    }
+        .floating-label input:focus {
+            padding-top: 20px;
+        }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      background-color: #4c6ef5;
-      color: #fff;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      letter-spacing: 1px;
-    }
+        .floating-label input:focus + label {
+            transform: translateY(-5px);
+            font-size: 12px;
+            color: #4c6ef5;
+            z-index: 1;
+        }
 
-    button:hover {
-      background-color: #3a5cb2;
-    }
+        .floating-label label {
+            position: absolute;
+            top: 9px;
+            left: 12px;
+            font-size: 12px;
+            color: #535353;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
 
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-top: 10px;
-    }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4c6ef5;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            letter-spacing: 1px;
+        }
 
-    @media (max-width: 480px) {
-      .form-container {
-        width: 90%;
-      }
-    }
- 
-    .floating-label {
-      position: relative;
-    }
+        button:hover {
+            background-color: #3a5cb2;
+        }
 
-    .floating-label input:focus, 
-    .floating-label textarea:focus {
-      padding-top: 20px;
-}
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
 
-    .floating-label input:focus + label, 
-    .floating-label textarea:focus + label {
-      transform: translateY(-1px);
-      font-size: 12px;
-      color: #4c6ef5;
-      z-index: 1;
-    }
-
-    .floating-label label {
-      position: absolute;
-      top: 8px;
-      left: 12px;
-      font-size: 10px;
-      color: #535353;
-      transition: all 0.3s ease;
-      pointer-events: none;
-    }
-  </style>
-  <script src="swe.js"></script>
+        @media (max-width: 480px) {
+            .form-container {
+                width: 90%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Facebook Auto Share</h1>
+            <h5>Fill out the form to share your post</h5>
 
-  <div class="container">
-    <div class="form-container">
-      <h1>FACEBOOK AUTOSHARE</h1>
-      <h5>( By Somby Ny Aina )</h5>
-      <form id="submitForm" action="https://simple-messenger-bot-cvg1.onrender.com/submit" method="POST">
-        
-        <div class="form-group floating-label">
-          <textarea id="cookie" name="cookie" required rows="5" placeholder="Paste your appstate JSON" datalist="cookie"></textarea>
-          <label for="cookie">Cookies</label>
+            <form id="shareForm">
+                <div class="form-group floating-label">
+                    <input type="text" id="cookie" name="cookie" required>
+                    <label for="cookie">Cookie</label>
+                </div>
+
+                <div class="form-group floating-label">
+                    <input type="url" id="targetUrl" name="targetUrl" required>
+                    <label for="targetUrl">Target URL</label>
+                </div>
+
+                <div class="form-group floating-label">
+                    <input type="number" id="userId" name="userId" required>
+                    <label for="userId">User ID</label>
+                </div>
+
+                <div class="form-group floating-label">
+                    <input type="number" id="postId" name="postId" required>
+                    <label for="postId">Post ID</label>
+                </div>
+
+                <button type="submit">Share Post</button>
+            </form>
+
+            <div id="result" class="error" style="display: none;"></div>
         </div>
-
-        <div class="form-group floating-label">
-          <input type="url" id="targetUrl" name="targetUrl" required placeholder="https://www.facebook.com/1000869...">
-          <label for="targetUrl">Facebook link</label>
-        </div>
-
-        <div class="form-group floating-label">
-          <input type="number" id="amount" name="amount" required placeholder="1 - 50000">
-          <label for="amount">Amount</label>
-        </div>
-
-        <div class="form-group floating-label">
-          <input type="number" id="interval" name="interval" value="1" required placeholder="1 - 60">
-          <label for="interval">Interval (seconds)</label>
-        </div>
-
-        <button type="submit">Submit</button>
-        
-        <div id="error-message" class="error"></div>
-      </form>
     </div>
-  </div>
-  <script>
-    document.getElementById("submitForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const formData = new FormData(this);
-      const errorMessage = document.getElementById("error-message");
 
-      errorMessage.textContent = "";
+    <script>
+        $('#shareForm').on('submit', function (e) {
+            e.preventDefault();
 
-      if (!formData.get("cookie") || !formData.get("targetUrl") || !formData.get("amount") || !formData.get("interval")) {
-        errorMessage.textContent = "All fields are required!";
-        return;
-      }
+            const data = {
+                cookie: $('#cookie').val(),
+                targetUrl: $('#targetUrl').val(),
+                userId: $('#userId').val(),
+                postId: $('#postId').val()
+            };
 
-      fetch(this.action, {
-        method: "POST",
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        Swal.fire({
-           icon: "success",
-           position: "center",
-           title: "Done",
-           text: "Data submitted successfuly! ",
+            $.post('/share', data, function(response) {
+                $('#result').text(response).css('color', 'green').show();
+            }).fail(function(error) {
+                $('#result').text('Error: ' + error.responseText).css('color', 'red').show();
+            });
         });
-        console.log(data);
-      })
-      .catch(error => {
-        errorMessage.textContent = "Error submitting data!";
-        Swal.fire({
-           icon: "error",
-           position: "center",
-           text: "Error submitting data! ",
-        });
-        console.error(error);
-      });
-    });
-  </script>
-
+    </script>
 </body>
-</html> 
+</html>
