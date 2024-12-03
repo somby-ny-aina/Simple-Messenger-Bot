@@ -11,7 +11,7 @@ module.exports = { description,
 
     if (prompt === 'gen') {
       try {
-        const response = await axios.get('https://c-v1.onrender.com/tempmail/gen');
+        const response = await axios.get('https://temp-mail-eight.vercel.app/tempmail/gen');
         
         if (response.data && response.data.email) {
           const tempEmail = response.data.email;
@@ -30,11 +30,11 @@ module.exports = { description,
       console.log('Email to check:', emailToCheck);
 
       try {
-        const response = await axios.get('https://c-v1.onrender.com/tempmail/inbox', { params: { email: emailToCheck } });
+        const response = await axios.get('https://temp-mail-eight.vercel.app/tempmail/message', { params: { email: emailToCheck } });
 
         if (response.data && response.data.length > 0) {
-          const inboxMessages = response.data.map((mail, index) =>
-            `───────────────────\n📩 ${index + 1}. From: ${mail.sender}\nSubject: ${mail.subject}\n\nMessage:\n${mail.message}───────────────────`
+          const inboxMessages = response.data.map((messages, index) =>
+            `───────────────────\n📩 ${index + 1}. From: ${messages.sender}\nSubject: ${messages.subject}\n\nMessage:\n${messages.message}───────────────────`
           ).join('\n\n\n');
           
           await sendMessage(senderId, { text: `📬 Inbox for ${emailToCheck}:\n${inboxMessages}\n` });
