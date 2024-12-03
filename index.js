@@ -143,10 +143,10 @@ let pendingImageDescriptions = {};
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
     if (prompt.toLowerCase() === "describe") {
-      const response = await axios.get(`https://joshweb.click/gemini`, {
-        params: { prompt: prompt, url: imageUrl }
+      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
+        params: { q: prompt, uid: senderId, url: imageUrl }
       });
-      const description = response.data.gemini;
+      const description = response.data.response;
       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
 
     } else if (prompt.toLowerCase() === "removebg") {
@@ -159,8 +159,16 @@ const describeImage = async (imageUrl, prompt, senderId) => {
         }
       });
 
-    } else {
-      await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg'." });
+    }else if (prompt.toLowerCase() === "zombie") {
+      const removeBgUrl = `https://kaiz-apis.gleeze.com/api/zombie?url=${encodeURIComponent(imageUrl)}`;
+      
+      await sendMessage(senderId, {
+        attachment: {
+          type: "image",
+          payload: { url: removeBgUrl, is_reusable: true }
+        }
+      }); } else {
+      await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg' or 'zombie'." });
     }
   } catch (error) {
     console.error("Image processing error:", error.message);
@@ -213,7 +221,7 @@ const handleImage = async (event) => {
   if (attachments && attachments[0].type === "image") {
     const imageUrl = attachments[0].payload.url;
     pendingImageDescriptions[senderID] = imageUrl;
-    await sendMessage(senderID, { text: "📷 Image received! Now send 'describe' or 'removebg'." });
+    await sendMessage(senderID, { text: "📷 Image received! Now send 'describe' or 'removebg' or 'zombie'." });
   }
 };
 
