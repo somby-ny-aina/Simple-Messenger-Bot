@@ -23,19 +23,19 @@ module.exports = {
         const sourceUrl = sourcePhoto.payload.url;
 
         try {
-          const response = `https://kaiz-apis.gleeze.com/api/faceswap-v2?targetUrl=${targetUrl}&sourceUrl=${sourceUrl}`;
+          const responseUrl = `https://kaiz-apis.gleeze.com/api/faceswap-v2?targetUrl=${encodeURIComponent(
+            targetUrl
+          )}&sourceUrl=${encodeURIComponent(sourceUrl)}`;
+
           await sendMessage(senderId, {
-              attachment: {
-                type: "image",
-                payload: {
-                  url: response,
-                  is_reusable: true,
-                },
+            attachment: {
+              type: "image",
+              payload: {
+                url: responseUrl,
+                is_reusable: true,
               },
-            });
-          } else {
-            await sendMessage(senderId, { text: "❌ Failed to perform face swap. Please try again." });
-          }
+            },
+          });
         } catch (error) {
           console.error("Face swap error:", error.message);
           await sendMessage(senderId, { text: "❌ An error occurred during the face swap." });
