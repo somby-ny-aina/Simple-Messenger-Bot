@@ -14,8 +14,8 @@ module.exports = { description,
         const response = await axios.get('https://temp-mail-eight.vercel.app/tempmail/gen');
         
         if (response.data && response.data.email) {
-          const tempEmail = response.data.email;
-          await sendMessage(senderId, { text: `📧 Temp Email Generated: ${tempEmail}` });
+          const tempEmail = response.data.email.replace(/\./g, '😑');
+          await sendMessage(senderId, { text: `📧 Temp Email Generated ( Replace 😑 by . ): ${tempEmail}` });
         } else {
           await sendMessage(senderId, { text: "❌ Failed to generate temp email." });
         }
