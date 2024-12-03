@@ -3,20 +3,15 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const fs = require('fs');
 const path = require('path');
-const { GPTx } = require('@ruingl/gptx');
+const { gpt } = require("gpti");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
-const gptx = new GPTx({
-  provider: 'Nextway',
-  model: 'gpt-4o-free'
-});
-
 const conversationHistory = {};
 
-const chatGptx = async (text, senderId) => {
+const chatGpt = async (text, senderId) => {
   try {
     if (!conversationHistory[senderId]) {
       conversationHistory[senderId] = [
@@ -26,13 +21,17 @@ const chatGptx = async (text, senderId) => {
 
     conversationHistory[senderId].push({ role: 'user', content: text });
 
-    const response = await gptx.ChatCompletion(conversationHistory[senderId]);
+    const response = await gpt.v3({
+      messages: conversationHistory[senderId],
+      markdown: false,
+      stream: false
+    });
 
-    conversationHistory[senderId].push({ role: 'assistant', content: response });
+    conversationHistory[senderId].push({ role: 'assistant', content: response.message });
 
-    return response;
+    return response.message;
   } catch (err) {
-    console.error("GPTx error:", err.message);
+    console.error("GPT error:", err.message);
     return "❌ An error has occurred while processing your request.";
   }
 };
@@ -202,11 +201,10 @@ const handleMessage = async (event) => {
     const [cmd, ...args] = message.slice(1).split(' ');
     return handleCommand(cmd, args, senderID, event);
   } else {
-    const botResponse = await chatGptx(message, senderID);
+    const botResponse = await chatGpt(message, senderID);
     return sendMessage(senderID, { text: botResponse });
   }
 };
-
 
 const handleImage = async (event) => {
   const senderID = event.sender.id;
@@ -244,7 +242,7 @@ app.get('/webhook', (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  if (mode && token) {
+if (mode && token) {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       console.log('WEBHOOK_VERIFIED');
       res.status(200).send(challenge);
@@ -259,7 +257,6 @@ app.get('/webhook', (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
-
 
 app.use(bodyParser.json());
 
@@ -277,22 +274,25 @@ app.post('/webhook', (req, res) => {
 });
 
 app.post('/chat', async (req, res) => {
-    const { history } = req.body; 
+  const { history } = req.body;
 
-    if (!history || !Array.isArray(history)) {
-        return res.status(400).json({ error: 'L\'historique doit être un tableau.' });
-    }
+  if (!history || !Array.isArray(history)) {
+    return res.status(400).json({ error: 'L\'historique doit être un tableau.' });
+  }
 
-    try {
-        const response = await gptx.ChatCompletion(history);
+  try {
+    const response = await gpt.v3({
+      messages: history,
+      markdown: false,
+      stream: false,
+    });
 
-        res.json({ message: response });
-    } catch (error) {
-        console.error('Erreur avec GPTx:', error.message);
-        res.status(500).json({ error: 'Une erreur est survenue lors du traitement de votre requête.' });
-    }
+    res.json({ message: response.message });
+  } catch (error) {
+    console.error('Erreur avec GPT:', error.message);
+    res.status(500).json({ error: 'Une erreur est survenue lors du traitement de votre requête.' });
+  }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Messenger bot is starting. 🤖 🇲🇬`);
