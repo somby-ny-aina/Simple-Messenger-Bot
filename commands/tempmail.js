@@ -1,6 +1,6 @@
 const axios = require('axios');
-const description = `1) Without prompt to get tempmail:
-/tempmail
+const description = `1) With prompt gen to get tempmail:
+/tempmail gen
 
 2) Without prompt to check inbox:
 /tempmail <tempmail>`;
@@ -11,11 +11,11 @@ module.exports = { description,
 
     if (prompt === 'gen') {
       try {
-        const response = await axios.get('https://temp-mail-eight.vercel.app/tempmail/gen');
+        const response = await axios.get('https://nethwieginedev.vercel.app/api/tempmail2-create?');
         
         if (response.data && response.data.email) {
-          const tempEmail = response.data.email.replace(/\./g, '😑');
-          await sendMessage(senderId, { text: `📧 Temp Email Generated ( Replace 😑 by . ): ${tempEmail}` });
+          const tempEmail = response.data.address;
+          await sendMessage(senderId, { text: `📧 Temp Email Generated: ${tempEmail}` });
         } else {
           await sendMessage(senderId, { text: "❌ Failed to generate temp email." });
         }
@@ -30,11 +30,11 @@ module.exports = { description,
       console.log('Email to check:', emailToCheck);
 
       try {
-        const response = await axios.get('https://temp-mail-eight.vercel.app/tempmail/message', { params: { email: emailToCheck } });
+        const response = await axios.get('https://nethwieginedev.vercel.app/api/tempmail-get', { params: { email: emailToCheck } });
 
         if (response.data && response.data.length > 0) {
           const inboxMessages = response.data.map((messages, index) =>
-            `───────────────────\n📩 ${index + 1}. From: ${messages.sender}\nSubject: ${messages.subject}\n\nMessage:\n${messages.message}───────────────────`
+            `───────────────────\n📩 ${index + 1}. From: ${messages.from}\nDate: ${messages.date}\nSubject: ${messages.subject}\n\nMessage:\n${messages.message}───────────────────`
           ).join('\n\n\n');
           
           await sendMessage(senderId, { text: `📬 Inbox for ${emailToCheck}:\n${inboxMessages}\n` });
