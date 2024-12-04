@@ -32,7 +32,7 @@ module.exports = { description,
       try {
         const response = await axios.get('https://nethwieginedev.vercel.app/api/tempmail-get', { params: { email: emailToCheck } });
 
-        if (response.messages.length > 0) {
+        if (response.data.messages.length > 0) {
           const inboxMessages = response.messages.map((messages, index) =>
             `───────────────────\n📩 ${index + 1}. From: ${messages.from}\nDate: ${messages.date}\nSubject: ${messages.subject}\n\nMessage:\n${messages.message}───────────────────`
           ).join('\n\n\n');
