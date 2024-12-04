@@ -11,7 +11,7 @@ module.exports = { description,
 
     if (prompt === 'gen') {
       try {
-        const response = await axios.get('https://nethwieginedev.vercel.app/api/tempmail2-create?');
+        const response = await axios.get('https://nethwieginedev.vercel.app/api/tempmail-create?');
         
         if (response.data && response.data.email) {
           const tempEmail = response.data.address;
