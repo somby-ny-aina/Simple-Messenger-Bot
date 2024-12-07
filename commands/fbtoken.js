@@ -2,12 +2,10 @@ const axios = require('axios');
 
 module.exports = {
   description: "Get EAAAA access token\n\n/fbtoken <email> | <password>",
-  async execute(args, senderId, sendMessage) {
-    if (args.length !== 1 || !args[0].includes('|')) {
-      return sendMessage(senderId, { text: "❌ Please provide both email and password in the format: /fbtoken email | password" });
-    }
+  async execute(prompt, senderId, sendMessage) {
+    if (!prompt) return sendMessage(senderId, { text: "❌ Please provide a prompt after /fbtoken." });
 
-    const [email, password] = args[0].split('|').map(item => item.trim());
+    const [email, password] = prompt.split('|').map(item => item.trim());
 
     if (!email || !password) {
       return sendMessage(senderId, { text: "❌ Both email and password must be provided." });
