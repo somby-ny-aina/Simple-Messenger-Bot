@@ -1,9 +1,9 @@
 const axios = require("axios");
 
 module.exports = {
-  description: "/fbtoken <email> <password>",
+  description: "/fbtoken <email> | <password>",
   async execute(args, senderId, sendMessage) {
-    const [email, pass] = args.map((item) => item.trim());
+    const [email, pass] = args.join(" ").split("|").map((item) => item.trim());
 
     if (!email || !pass) {
       return sendMessage(senderId, {
