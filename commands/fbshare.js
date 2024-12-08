@@ -1,10 +1,9 @@
 const axios = require("axios");
 
 module.exports = {
-  description: "/fbshare <access_token> <link> <share_amount>",
+  description: "/fbshare <access_token> | <link> | <share_amount>",
   async execute(args, senderId, sendMessage) {
-    
-    const [accessToken, shareUrl, shareCount] = args.map((item) => item.trim());
+    const [accessToken, shareUrl, shareCount] = args.join(" ").split("|").map((item) => item.trim());
 
     if (!accessToken || !shareUrl || !shareCount) {
       return sendMessage(senderId, {
