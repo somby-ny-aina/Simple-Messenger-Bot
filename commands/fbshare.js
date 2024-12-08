@@ -1,38 +1,51 @@
 const axios = require("axios");
 
 module.exports = {
-  description: "/fbshare <link> | <amount>",
+  description: "/fbshare <access_token> <link> <share_amount>",
   async execute(args, senderId, sendMessage) {
-    const cookie = process.env.cookie;
-    const [url, amount] = args.split("|").map((arg) => arg.trim());
+    
+    const [accessToken, shareUrl, shareCount] = args.map((item) => item.trim());
 
-    if (!url || !amount) {
+    if (!accessToken || !shareUrl || !shareCount) {
       return sendMessage(senderId, {
-        text: "❌ Usage: /fbshare <post_url> | <amount>",
+        text: "❌ All fields (accessToken, shareUrl, shareCount) must be provided.",
+      });
+    }
+
+    if (isNaN(shareCount)) {
+      return sendMessage(senderId, {
+        text: "❌ The share count must be a valid number.",
       });
     }
 
     try {
-      await sendMessage(senderId, { text: "⏳ Submitting share request..." });
+      const response = await axios.post(
+        "https://simple-messenger-bot-cvg1.onrender.com/somby-share",
+        {
+          accessToken: accessToken,
+          shareUrl: shareUrl,
+          shareCount: parseInt(shareCount),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const response = await axios.post("https://tests-qb46.onrender.com/submit-share", {
-        cookie: cookie,
-        url: url,
-        amount: parseInt(amount, 10),
-        interval: 1,
-      });
-
-      if (response.data) {
+      if (response.data.success) {
         await sendMessage(senderId, {
-          text: `✅ Share request submitted successfully! \nDetails: ${JSON.stringify(response.data)}`,
+          text: `✅ Sharing posts in progress... ${shareCount} posts will be shared.`,
         });
       } else {
-        throw new Error("No response data from the API.");
+        await sendMessage(senderId, {
+          text: `❌ Something went wrong: ${response.data.message || "Unknown error"}`,
+        });
       }
     } catch (error) {
-      console.error("Error submitting share request:", error.response?.data || error.message);
+      console.error("Error:", error.response?.data || error.message);
       await sendMessage(senderId, {
-        text: `❌ Error submitting share request: ${error.response?.data?.message || error.message}`,
+        text: `❌ Failed to share posts: ${error.response?.data?.error?.message || error.message}`,
       });
     }
   },
