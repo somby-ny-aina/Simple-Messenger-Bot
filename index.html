@@ -46,7 +46,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .form-container h5 {
             color: #9BAFFF;
             text-align: center;
@@ -145,13 +145,13 @@
                 </div>
 
                 <div class="form-group floating-label">
-                    <input type="number" id="userId" name="userId" required>
-                    <label for="userId">User ID</label>
+                    <input type="number" id="amId" name="userId" required>
+                    <label for="userId">Amount</label>
                 </div>
 
                 <div class="form-group floating-label">
-                    <input type="number" id="postId" name="postId" required>
-                    <label for="postId">Post ID</label>
+                    <input type="number" id="intId" name="postId" required>
+                    <label for="postId">Interval</label>
                 </div>
 
                 <button type="submit">Share Post</button>
@@ -162,22 +162,64 @@
     </div>
 
     <script>
-        $('#shareForm').on('submit', function (e) {
-            e.preventDefault();
+        const serverUrl = 'https://autoshare-69su.onrender.com';
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(serverUrl);
+                if (response.ok) {
+                    document.getElementById('result').textContent = 'Server is active.';
+                    document.getElementById('result').style.color = 'green';
+                    document.getElementById('result').style.display = 'block';
+                    document.querySelector('button').disabled = false;
+                } else {
+                    document.getElementById('result').textContent = 'Server is down.';
+                    document.getElementById('result').style.color = 'red';
+                    document.getElementById('result').style.display = 'block';
+                    document.querySelector('button').disabled = true;
+                }
+            } catch {
+                document.getElementById('result').textContent = 'Server is down.';
+                document.getElementById('result').style.color = 'red';
+                document.getElementById('result').style.display = 'block';
+                document.querySelector('button').disabled = true;
+            }
+        }
+
+        document.getElementById('shareForm').onsubmit = async function (event) {
+            event.preventDefault();
 
             const data = {
-                cookie: $('#cookie').val(),
-                targetUrl: $('#targetUrl').val(),
-                userId: $('#userId').val(),
-                postId: $('#postId').val()
+                cookie: document.getElementById('cookie').value,
+                postLink: document.getElementById('targetUrl').value,
+                shareCount: document.getElementById('amId').value,
+                delay: document.getElementById('intId').value
             };
 
-            $.post('/share', data, function(response) {
-                $('#result').text(response).css('color', 'green').show();
-            }).fail(function(error) {
-                $('#result').text('Error: ' + error.responseText).css('color', 'red').show();
-            });
-        });
+            try {
+                const response = await fetch(`${serverUrl}/api/submit`, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('result').textContent = 'Post Shared Successfully!';
+                    document.getElementById('result').style.color = 'green';
+                } else {
+                    document.getElementById('result').textContent = `Error: ${result.message}`;
+                    document.getElementById('result').style.color = 'red';
+                }
+            } catch (error) {
+                document.getElementById('result').textContent = 'Network error, please try again.';
+                document.getElementById('result').style.color = 'red';
+            }
+
+            document.getElementById('result').style.display = 'block';
+        };
+
+        window.onload = checkServerStatus;
     </script>
 </body>
 </html>
