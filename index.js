@@ -128,12 +128,15 @@ let pendingImageDescriptions = {};
 
 const describeImage = async (imageUrl, prompt, senderId) => {
   try {
-    if (prompt.toLowerCase() === "describe") {
-      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
-        params: { q: prompt, uid: senderId, url: imageUrl }
+    if (prompt.toLowerCase() === "vampire") {
+      const vampUrl = `https://kaiz-apis.gleeze.com/api/vampire?imageUrl=${encodeURIComponent(imageUrl)}`;
+      
+      await sendMessage(senderId, {
+        attachment: {
+          type: "image",
+          payload: { url: vampUrl, is_reusable: true }
+        }
       });
-      const description = response.data.response;
-      await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
 
     } else if (prompt.toLowerCase() === "removebg") {
       const removeBgUrl = `https://kaiz-apis.gleeze.com/api/removebg?url=${encodeURIComponent(imageUrl)}`;
@@ -154,8 +157,12 @@ const describeImage = async (imageUrl, prompt, senderId) => {
           payload: { url: removeBgUrl, is_reusable: true }
         }
       }); } else {
-      await sendMessage(senderId, { text: "❌ Unknown prompt. Use 'describe' or 'removebg' or 'zombie'." });
-    }
+      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
+        params: { q: prompt, uid: senderId, url: imageUrl }
+      });
+      const description = response.data.response;
+      await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
+
   } catch (error) {
     console.error("Image processing error:", error.message);
     await sendMessage(senderId, { text: "❌ Error processing the image." });
@@ -207,7 +214,7 @@ const handleImage = async (event) => {
   if (attachments && attachments[0].type === "image") {
     const imageUrl = attachments[0].payload.url;
     pendingImageDescriptions[senderID] = imageUrl;
-    await sendMessage(senderID, { text: "📷 Image received! Now send 'describe' or 'removebg' or 'zombie'." });
+    await sendMessage(senderID, { text: "📷 Image received! Now send 'describe' or 'removebg' or 'zombie' or 'vampire' or other prompt." });
   }
 };
 
