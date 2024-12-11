@@ -148,7 +148,7 @@ const describeImage = async (imageUrl, prompt, senderId) => {
         }
       });
 
-    }else if (prompt.toLowerCase() === "zombie") {
+    } else if (prompt.toLowerCase() === "zombie") {
       const removeBgUrl = `https://kaiz-apis.gleeze.com/api/zombie?url=${encodeURIComponent(imageUrl)}`;
       
       await sendMessage(senderId, {
@@ -157,12 +157,12 @@ const describeImage = async (imageUrl, prompt, senderId) => {
           payload: { url: removeBgUrl, is_reusable: true }
         }
       }); } else {
-      const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
+       const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
         params: { q: prompt, uid: senderId, url: imageUrl }
-      });
-      const description = response.data.response;
-      await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
-
+       });
+       const description = response.data.response;
+       await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
+    }
   } catch (error) {
     console.error("Image processing error:", error.message);
     await sendMessage(senderId, { text: "❌ Error processing the image." });
