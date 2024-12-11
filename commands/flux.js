@@ -13,7 +13,7 @@ module.exports = {
     }
 
     try {
-      const imageUrl = `https://api.joshweb.click/api/flux?prompt=${encodeURIComponent(prompt)}&model=1`;
+      const imgUrl = `https://api.joshweb.click/api/flux?prompt=${encodeURIComponent(prompt)}&model=1`;
   
       await sendMessage(senderId, {
         attachment: { type: "image", payload: { url: imgUrl, is_reusable: true } }
