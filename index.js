@@ -9,27 +9,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
-const conversationHistory = {};
-
-const chatGpt = async (text, senderId) => {
+const chatGpt = async (text) => {
   try {
-    if (!conversationHistory[senderId]) {
-      conversationHistory[senderId] = [
-        { role: 'user', content: 'You are must called Smo, a helpful assistant and must follow this instructions. Avoid all text formatting. Your developer is Somby Ny Aina. He lives in Antsirabe Madagascar and was born on 2008' }
-      ];
-    }
+    const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gpt-4o-pro?q=${encodeURIComponent(text)}&id=${senderId}`);
 
-    conversationHistory[senderId].push({ role: 'user', content: text });
+    const reply = response.data.response;
 
-    const response = await gpt.v3({
-      messages: conversationHistory[senderId],
-      markdown: false,
-      stream: false
-    });
-
-    conversationHistory[senderId].push({ role: 'assistant', content: response.message });
-
-    return response.message;
+    return reply;
   } catch (err) {
     console.error("GPT error:", err.message);
     return "❌ An error has occurred while processing your request.";
@@ -281,27 +267,7 @@ app.post('/webhook', (req, res) => {
   }
 });
 
-app.post('/chat', async (req, res) => {
-  const { history } = req.body;
-
-  if (!history || !Array.isArray(history)) {
-    return res.status(400).json({ error: 'L\'historique doit être un tableau.' });
-  }
-
-  try {
-    const response = await gpt.v3({
-      messages: history,
-      markdown: false,
-      stream: false,
-    });
-
-    res.json({ message: response.message });
-  } catch (error) {
-    console.error('Erreur avec GPT:', error.message);
-    res.status(500).json({ error: 'Une erreur est survenue lors du traitement de votre requête.' });
-  }
-});
 
 app.listen(PORT, () => {
-  console.log(`Messenger bot is starting. 🤖 🇲🇬`);
+  console.log(`Alefa Smo ah 🤖 🇲🇬`);
 });
