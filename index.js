@@ -158,7 +158,7 @@ const describeImage = async (imageUrl, prompt, senderId) => {
         }
       }); } else {
        const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
-        params: { q: prompt, uid: senderId, url: imageUrl }
+        params: { q: prompt, uid: senderId, imageUrl: imageUrl }
        });
        const description = response.data.response;
        await sendMessage(senderId, { text: description || "❌ Could not describe the image." });
