@@ -16,15 +16,15 @@ module.exports = {
         "https://simple-messenger-bot-cvg1.onrender.com/somby-token",
         {
           params: {
-            email: email,
-            pass: pass,
+            username: email,
+            password: pass,
           },
         }
       );
 
-      if (response.data.access_token) {
+      if (response.data.accessToken) {
         await sendMessage(senderId, {
-          text: `✅ Token retrieved successfully: ${response.data.access_token}`,
+          text: `✅ Token retrieved successfully: ${response.data.accessToken}`,
         });
       } else {
         await sendMessage(senderId, {
