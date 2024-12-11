@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const PAGE_ACCESS_TOKEN = process.env.token;
 
-const chatGpt = async (senderId, text) => {
+const chatGpt = async (text, senderId) => {
   try {
     const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gpt-4o-pro?q=${encodeURIComponent(text)}&uid=${senderId}`);
 
