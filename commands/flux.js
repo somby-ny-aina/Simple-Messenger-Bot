@@ -14,11 +14,9 @@ module.exports = {
 
     try {
       const imageUrl = `https://api.joshweb.click/api/flux?prompt=${encodeURIComponent(prompt)}&model=1`;
-
-      const imgPath = `https://genosite-w0aa.onrender.com/convert-webp-to-jpg?imageUrl=${imageUrl}`;
-          
+  
       await sendMessage(senderId, {
-        attachment: { type: "image", payload: { url: imgPath, is_reusable: true } }
+        attachment: { type: "image", payload: { url: imgUrl, is_reusable: true } }
       });
     } catch (error) {
       console.error("Error:", error.message);
