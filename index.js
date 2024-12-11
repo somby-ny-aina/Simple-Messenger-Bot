@@ -11,7 +11,7 @@ const PAGE_ACCESS_TOKEN = process.env.token;
 
 const chatGpt = async (text) => {
   try {
-    const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gpt-4o-pro?q=${encodeURIComponent(text)}&id=${senderId}`);
+    const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gpt-4o-pro?q=${encodeURIComponent(text)}&uid=${senderId}`);
 
     const reply = response.data.response;
 
