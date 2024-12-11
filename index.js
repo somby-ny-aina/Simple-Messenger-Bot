@@ -148,13 +148,23 @@ const describeImage = async (imageUrl, prompt, senderId) => {
         }
       });
 
-    } else if (prompt.toLowerCase() === "zombie") {
-      const removeBgUrl = `https://kaiz-apis.gleeze.com/api/zombie?url=${encodeURIComponent(imageUrl)}`;
+    } else if (prompt.toLowerCase() === "xmas") {
+      const xmUrl = `https://kaiz-apis.gleeze.com/api/xmas-cap?imageUrl=${encodeURIComponent(imageUrl)}&color=red`;
       
       await sendMessage(senderId, {
         attachment: {
           type: "image",
-          payload: { url: removeBgUrl, is_reusable: true }
+          payload: { url: xmUrl, is_reusable: true }
+        }
+      });
+
+    } else if (prompt.toLowerCase() === "zombie") {
+      const zUrl = `https://kaiz-apis.gleeze.com/api/zombie?url=${encodeURIComponent(imageUrl)}`;
+      
+      await sendMessage(senderId, {
+        attachment: {
+          type: "image",
+          payload: { url: zUrl, is_reusable: true }
         }
       }); } else {
        const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
