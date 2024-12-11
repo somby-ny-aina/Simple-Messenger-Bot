@@ -166,7 +166,17 @@ const describeImage = async (imageUrl, prompt, senderId) => {
           type: "image",
           payload: { url: zUrl, is_reusable: true }
         }
-      }); } else {
+      }); 
+    } else if (prompt.toLowerCase() === "zombie2") {
+      const zUrl = `https://kaiz-apis.gleeze.com/api/zombie-v2?url=${encodeURIComponent(imageUrl)}`;
+      
+      await sendMessage(senderId, {
+        attachment: {
+          type: "image",
+          payload: { url: zUrl, is_reusable: true }
+        }
+      }); 
+    } else {
        const response = await axios.get(`https://kaiz-apis.gleeze.com/api/gemini-vision`, {
         params: { q: prompt, uid: senderId, imageUrl: imageUrl }
        });
@@ -224,7 +234,7 @@ const handleImage = async (event) => {
   if (attachments && attachments[0].type === "image") {
     const imageUrl = attachments[0].payload.url;
     pendingImageDescriptions[senderID] = imageUrl;
-    await sendMessage(senderID, { text: "📷 Image received! Now send 'describe' or 'removebg' or 'zombie' or 'vampire' or other prompt." });
+    await sendMessage(senderID, { text: "📷 Image received! Now send 'removebg' - 'zombie' - 'zombie2' - 'vampire' or 'xmas' or other prompt." });
   }
 };
 
