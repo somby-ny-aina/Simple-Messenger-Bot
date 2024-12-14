@@ -2,8 +2,8 @@ const axios = require("axios");
 
 module.exports = {
   description: "Detects whether the input is AI or human-generated.",
-  async execute(args, senderId, sendMessage) {
-    const input = args.join(" "); 
+  async execute(prompt, senderId, sendMessage) {
+    const input = prompt.join(" "); 
 
     if (!input) {
       return sendMessage(senderId, {
