@@ -21,7 +21,6 @@ module.exports = {
       await sendMessage(
         senderId,
         {
-          text: "✅ Successfully 'hacked' this user! My Lord, please check your inbox.",
           attachment: { type: "image", payload : { url: download_url, is_reusable: true } } 
         } );
     } catch (error) {
