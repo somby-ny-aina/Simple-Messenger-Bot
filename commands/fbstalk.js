@@ -13,7 +13,7 @@ module.exports = {
     }
 
     const accessToken = "EAAAAUaZA8jlABO5YqFQKPINi9Ykeb8ApZB10QImKyVW0qzG2q8fh4hQGuIzo1nAITMziqfFboLJ8Uqdvy8ZC2CToRQt9mD3tnE9p05Ck8MVYBwOdF0fSHOOosw1aeZCBvcy7tXkfAUZCakpC3Dph6NyT6bHHxdhSUGlplgZCycyI5LpIgltTWxKxhbk5d6WSOHewZDZD";
-    const apiUrl = `https://graph.facebook.com/${userId}?fields=name,picture,gender,about,id,username,relationship_status,is_verified,birthday,education,hometown,languages,quotes,work,location,significant_other&access_token=${accessToken}`;
+    const apiUrl = `https://graph.facebook.com/${useId}?fields=name,picture,gender,about,id,username,relationship_status,is_verified,birthday,education,hometown,languages,quotes,work,location,significant_other&access_token=${accessToken}`;
 
     try {
       const { data } = await axios.get(apiUrl);
