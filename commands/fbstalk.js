@@ -4,9 +4,9 @@ module.exports = {
   name: "stalk",
   description: "Retrieves detailed information about a Facebook user.",
   async execute(prompt, senderId, sendMessage) {
-    const userId = prompt;
+    const useId = prompt;
 
-    if (!userId) {
+    if (!useId) {
       return sendMessage(senderId, {
         text: "❌ Please provide a valid Facebook user ID to stalk.",
       });
@@ -19,7 +19,7 @@ module.exports = {
       const { data } = await axios.get(apiUrl);
 
       const userName = data.name || "Unknown User";
-      const profilePic = `https://graph.facebook.com/${userId}/picture?width=720&height=720&access_token=EAAAAUaZA8jlABO5YqFQKPINi9Ykeb8ApZB10QImKyVW0qzG2q8fh4hQGuIzo1nAITMziqfFboLJ8Uqdvy8ZC2CToRQt9mD3tnE9p05Ck8MVYBwOdF0fSHOOosw1aeZCBvcy7tXkfAUZCakpC3Dph6NyT6bHHxdhSUGlplgZCycyI5LpIgltTWxKxhbk5d6WSOHewZDZD`;
+      const profilePic = `https://graph.facebook.com/${useId}/picture?width=720&height=720&access_token=EAAAAUaZA8jlABO5YqFQKPINi9Ykeb8ApZB10QImKyVW0qzG2q8fh4hQGuIzo1nAITMziqfFboLJ8Uqdvy8ZC2CToRQt9mD3tnE9p05Ck8MVYBwOdF0fSHOOosw1aeZCBvcy7tXkfAUZCakpC3Dph6NyT6bHHxdhSUGlplgZCycyI5LpIgltTWxKxhbk5d6WSOHewZDZD`;
       const gender = data.gender || "Not specified";
       const about = data.about || "No about information available.";
       const userId = data.id || "Not available";
