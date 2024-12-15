@@ -3,8 +3,8 @@ const axios = require("axios");
 module.exports = {
   name: "stalk",
   description: "Retrieves detailed information about a Facebook user.",
-  async execute(args, senderId, sendMessage) {
-    const userId = args[0];
+  async execute(prompt, senderId, sendMessage) {
+    const userId = prompt;
 
     if (!userId) {
       return sendMessage(senderId, {
