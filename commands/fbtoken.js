@@ -13,7 +13,7 @@ module.exports = {
 
     try {
       const response = await axios.get(
-        "https://simple-messenger-bot-cvg1-nwr4.onrender.com/sombytoken",
+        "https://somby-production.up.railway.app/sombytoken",
         {
           params: {
             username: email,
